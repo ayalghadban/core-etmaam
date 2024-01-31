@@ -3,7 +3,7 @@
 namespace App;
 
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class Admin extends Authenticatable
@@ -19,9 +19,9 @@ class Admin extends Authenticatable
     'role_id', 'username', 'email', 'password', 'first_name', 'last_name', 'image', 'status'
   ];
 
-
-  public function role()
+    //relationships
+  public function role() : BelongsTo
   {
-    return $this->belongsTo('App\Role');
+    return $this->belongsTo(Role::class);
   }
 }

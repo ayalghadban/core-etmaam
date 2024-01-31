@@ -3,14 +3,18 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Article extends Model
 {
-  public function articleCategory() {
-    return $this->belongsTo('App\ArticleCategory');
+    //relationships
+  public function articleCategory() : BelongsTo
+  {
+    return $this->belongsTo(ArticleCategory::class);
   }
 
-  public function language() {
-    return $this->belongsTo('App\Language');
+  public function language() : BelongsTo
+{
+    return $this->belongsTo(Language::class);
   }
 }
