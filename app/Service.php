@@ -3,23 +3,30 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Service extends Model
 {
   public $timestamps = false;
 
-  public function scategory()
+  protected $fillable = [
+    'language_id', 'scategory_id', 'main_image',
+    'title', 'slug', 'content', 'summary', 'serial_number',
+    'meta_keywords', 'meta_description', 'feature', 'details_page_status', 'sidebar'];
+
+  public function scategory() :BelongsTo
   {
-    return $this->belongsTo('App\Scategory');
+    return $this->belongsTo(Scategory::class);
   }
 
-  public function portfolios()
+  public function portfolios() :HasMany
   {
-    return $this->hasMany('App\Portfolio');
+    return $this->hasMany(Portfolio::class);
   }
 
-  public function language()
+  public function language() :BelongsTo
   {
-    return $this->belongsTo('App\Language');
+    return $this->belongsTo(Language::class);
   }
 }
