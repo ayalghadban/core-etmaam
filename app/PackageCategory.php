@@ -3,6 +3,8 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class PackageCategory extends Model
 {
@@ -15,13 +17,14 @@ class PackageCategory extends Model
     'serial_number'
   ];
 
-  public function packageCategoryLang()
+  // Relationship
+  public function packageCategoryLang()  :BelongsTo
   {
-    return $this->belongsTo('App\Language');
+    return $this->belongsTo(Language::class);
   }
 
-  public function packageList()
+  public function packageList() :HasMany
   {
-    return $this->hasMany('App\Package', 'category_id', 'id');
+    return $this->hasMany(Package::class, 'category_id', 'id');
   }
 }

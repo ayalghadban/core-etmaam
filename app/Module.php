@@ -3,12 +3,14 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Module extends Model
 {
-  public function moduleBelongsToCourse()
+    
+  public function moduleBelongsToCourse() :BelongsTo
   {
-    return $this->belongsTo('App\Course');
+    return $this->belongsTo(Course::class);
   }
 
   public function lessons()

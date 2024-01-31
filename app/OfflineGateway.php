@@ -3,12 +3,15 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class OfflineGateway extends Model
 {
     protected $fillable = ['id', 'language_id', 'name', 'short_description', 'instructions', 'serial_number', 'status', 'is_receipt', 'receipt'];
 
-    public function offline_gateway() {
-        return $this->belongsTo('App\OfflineGateway');
+    //Relations
+    public function offline_gateway() :BelongsTo
+    {
+        return $this->belongsTo(OfflineGateway::class);
     }
 }

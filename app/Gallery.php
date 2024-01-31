@@ -3,17 +3,20 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Gallery extends Model
 {
-    
-  public function language()
-  {
-    return $this->belongsTo('App\Language');
-  }
+    protected $fillable = ['language_id', 'title', 'image', 'serial_number', 'created_at', 'updated_at', 'category_id'];
 
-  public function galleryImgCategory()
-  {
-    return $this->belongsTo('App\GalleryCategory', 'category_id', 'id');
-  }
+    //Relations
+    public function language(): BelongsTo
+    {
+        return $this->belongsTo(Language::class);
+    }
+
+    public function galleryImgCategory(): BelongsTo
+    {
+        return $this->belongsTo(GalleryCategory::class, 'category_id', 'id');
+    }
 }

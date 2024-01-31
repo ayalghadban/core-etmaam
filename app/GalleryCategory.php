@@ -3,6 +3,8 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class GalleryCategory extends Model
 {
@@ -13,13 +15,14 @@ class GalleryCategory extends Model
     'serial_number'
   ];
 
-  public function galleryCategoryLang()
+  // Relations
+  public function galleryCategoryLang() :BelongsTo
   {
-    return $this->belongsTo('App\Language');
+    return $this->belongsTo(Language::class);
   }
 
-  public function galleryImg()
+  public function galleryImg() :HasMany
   {
-    return $this->hasMany('App\Gallery', 'category_id', 'id');
+    return $this->hasMany(Gallery::class, 'category_id', 'id');
   }
 }
