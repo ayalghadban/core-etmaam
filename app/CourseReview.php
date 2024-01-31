@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class CourseReview extends Model
 {
@@ -13,13 +14,15 @@ class CourseReview extends Model
     'rating'
   ];
 
-  public function reviewedCourse()
+  //Relationship
+
+  public function reviewedCourse() : BelongsTo
   {
-    return $this->belongsTo('App\Course');
+    return $this->belongsTo(Course::class);
   }
 
-  public function reviewByUser()
+  public function reviewByUser() : BelongsTo
   {
-    return $this->belongsTo('App\User', 'user_id', 'id');
+    return $this->belongsTo(User::class, 'user_id', 'id');
   }
 }

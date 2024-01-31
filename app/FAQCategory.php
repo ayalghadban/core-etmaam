@@ -3,6 +3,8 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class FAQCategory extends Model
 {
@@ -15,13 +17,14 @@ class FAQCategory extends Model
     'serial_number'
   ];
 
-  public function faqCategoryLang()
+  //Relationships
+  public function faqCategoryLang() :BelongsTo
   {
-    return $this->belongsTo('App\Language');
+    return $this->belongsTo(Language::class);
   }
 
-  public function frequentlyAskedQuestion()
+  public function frequentlyAskedQuestion() : HasMany
   {
-    return $this->hasMany('App\Faq', 'category_id', 'id');
+    return $this->hasMany(Faq::class, 'category_id', 'id');
   }
 }

@@ -7,8 +7,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ArticleCategory extends Model
 {
-  public function articles() : HasMany
-  {
-    return $this->hasMany(Article::class);
-  }
+    protected $fillable = ['language_id', 'name', 'status', 'serial_number', 'created_at', 'updated_at'];
+
+    //Relationship
+    public function articles(): HasMany
+    {
+        return $this->hasMany(Article::class);
+    }
 }

@@ -3,6 +3,8 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class CoursePurchase extends Model
 {
@@ -21,18 +23,19 @@ class CoursePurchase extends Model
     'invoice'
   ];
 
-  public function courseSellTo()
+  //Relationships
+  public function courseSellTo() :BelongsTo
   {
-    return $this->belongsTo('App\User');
+    return $this->belongsTo(User::class);
   }
 
-  public function course()
+  public function course() : HasOne
   {
-    return $this->hasOne('App\Course', 'id', 'course_id');
+    return $this->hasOne(Course::class, 'id', 'course_id');
   }
 
-  public function user()
+  public function user() : BelongsTo
   {
-    return $this->belongsTo('App\User');
+    return $this->belongsTo(User::class);
   }
 }

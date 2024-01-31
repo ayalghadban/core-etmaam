@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Donation extends Model
 {
     protected $table = "donations";
+
     protected $fillable = [
         'title',
         'slug',
@@ -19,4 +20,5 @@ class Donation extends Model
         'meta_description',
         'lang_id'
     ];
+    // have to make relationships
 }

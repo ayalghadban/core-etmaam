@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Event extends Model
 {
@@ -30,7 +31,9 @@ class Event extends Model
         'lang_id',
         'cat_id',
     ];
-    public function eventCategories(){
+
+    public function eventCategories() :BelongsTo
+    {
         return $this->belongsTo(EventCategory::class,'cat_id','id');
     }
 }

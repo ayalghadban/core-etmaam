@@ -12,4 +12,6 @@ class Conversation extends Model
         'reply',
         'file',
     ];
+
+    // لازم يكون في ريليشن مشان user_id, ticket_id,
 }
