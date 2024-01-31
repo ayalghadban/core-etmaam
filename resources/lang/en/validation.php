@@ -12,7 +12,7 @@ return [
     | as the size rules. Feel free to tweak each of these messages here.
     |
     */
-
+    'mobile.required' => 'Enter your mobile',
     'accepted' => 'The :attribute must be accepted.',
     'active_url' => 'The :attribute is not a valid URL.',
     'after' => 'The :attribute must be a date after :date.',
@@ -129,8 +129,56 @@ return [
     */
 
     'custom' => [
-        'attribute-name' => [
-            'rule-name' => 'custom-message',
+        'email' => [
+            'required' => 'Please enter email address',
+        ],
+        'fullname' => [
+            'required' => 'Please enter full name',
+        ],
+        'company_name' => [
+            'required' => 'Please enter your company name',
+        ],
+        'email' => [
+            'required' => 'Please enter email address',
+        ],
+        'mobile' => [
+            'required' => 'Please enter your mobile number',
+        ],
+        'category_id' => [
+            'required' => 'Please select a category',
+        ],
+        'city' => [
+            'required' => 'Please select a city',
+        ],
+        'client_type' => [
+            'required' => 'Please select a company size',
+        ],
+        'service_id' => [
+            'required' => 'Please select the required service',
+        ],
+        'suitable_time' => [
+            'required' => 'Please select the suitable time to contact you',
+        ],
+        'desc' => [
+            'required' => 'Please write description here',
+        ],
+        'notes' => [
+            'required' => 'Please write your notes',
+        ],
+        'partner_type' => [
+            'required' => 'Select partnership type',
+        ],
+        'package_id' => [
+            'required' => 'Select a package',
+        ],
+        'emp_num' => [
+            'required' => 'Type number of employees',
+        ],
+        'period' => [
+            'required' => 'Select period of subscription',
+        ],
+        'cr' => [
+            'required' => 'Please write your CR number',
         ],
     ],
 

@@ -112,7 +112,7 @@ return [
     'starts_with' => 'يجب أن يبدأ :attribute بأحد القيم التالية: :values',
     'string'      => 'يجب أن يكون :attribute نصًا.',
     'timezone'    => 'يجب أن يكون :attribute نطاقًا زمنيًا صحيحًا.',
-    'unique'      => 'قيمة :attribute مُستخدمة من قبل.',
+    'unique'      => ':attribute مستخدم من قبل.',
     'uploaded'    => 'فشل في تحميل الـ :attribute.',
     'url'         => 'صيغة الرابط :attribute غير صحيحة.',
     'uuid'        => ':attribute يجب أن يكون بصيغة UUID سليمة.',
@@ -129,8 +129,53 @@ return [
     */
 
     'custom' => [
-        'attribute-name' => [
-            'rule-name' => 'custom-message',
+        'email' => [
+            'required' => 'يرجى إدخال البريد الإلكترونيّ',
+        ],
+        'fullname' => [
+            'required' => 'يرجى إدخال اسم الكامل',
+        ],
+        'company_name' => [
+            'required' => 'يرجى إدخال اسم المنشأة',
+        ],
+        'mobile' => [
+            'required' => 'يرجى إدخال رقم الجوّال',
+        ],
+        'category_id' => [
+            'required' => 'يرجى اختيار القسم',
+        ],
+        'city' => [
+            'required' => 'يرجى اختيار المدينة',
+        ],
+        'client_type' => [
+            'required' => 'يرجى تحديد نوع المنشأة',
+        ],
+        'service_id' => [
+            'required' => 'يرجى اختيار الخدمة المطلوبة',
+        ],
+        'suitable_time' => [
+            'required' => 'يرجى اختيار الفترة المناسبة للتّواصل',
+        ],
+        'desc' => [
+            'required' => 'يرجى كتابة وصف للطّلب',
+        ],
+        'notes' => [
+            'required' => 'يرجى كتابة ملاحظات لتوضيح طلبك',
+        ],
+        'partner_type' => [
+            'required' => 'يرجى اختيار نوع الشّراكة',
+        ],
+        'package_id' => [
+            'required' => 'يرجى اختيار الباقة',
+        ],
+        'emp_num' => [
+            'required' => 'يرجى تحديد عدد الموظّفين',
+        ],
+        'period' => [
+            'required' => 'يرجى تحديد مدّة الاشتراك',
+        ],
+        'cr' => [
+            'required' => 'يرجى كتابة رقم السّجلّ التّجاريّ',
         ],
     ],
 
@@ -148,30 +193,30 @@ return [
     'attributes' => [
         'name'                  => 'الاسم',
         'username'              => 'اسم المُستخدم',
-        'email'                 => 'البريد الالكتروني',
+        'email'                 => 'البريد الإلكترونيّ',
         'first_name'            => 'الاسم الأول',
         'last_name'             => 'اسم العائلة',
         'password'              => 'كلمة المرور',
         'password_confirmation' => 'تأكيد كلمة المرور',
         'city'                  => 'المدينة',
-        'country'               => 'الدولة',
-        'address'               => 'عنوان السكن',
+        'country'               => 'الدّولة',
+        'address'               => 'عنوان السّكن',
         'phone'                 => 'الهاتف',
-        'mobile'                => 'الجوال',
+        'mobile'                => 'الجوّال',
         'age'                   => 'العمر',
         'sex'                   => 'الجنس',
-        'gender'                => 'النوع',
+        'gender'                => 'النّوع',
         'day'                   => 'اليوم',
-        'month'                 => 'الشهر',
-        'year'                  => 'السنة',
+        'month'                 => 'الشّهر',
+        'year'                  => 'السّنة',
         'hour'                  => 'ساعة',
         'minute'                => 'دقيقة',
         'second'                => 'ثانية',
         'title'                 => 'العنوان',
         'content'               => 'المُحتوى',
         'description'           => 'الوصف',
-        'excerpt'               => 'المُلخص',
-        'date'                  => 'التاريخ',
+        'excerpt'               => 'المُلخّص',
+        'date'                  => 'التّاريخ',
         'time'                  => 'الوقت',
         'available'             => 'مُتاح',
         'size'                  => 'الحجم',
