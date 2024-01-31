@@ -37,7 +37,7 @@
                     <div class="col-md-6">
                        <div class="single-blog">
                           <div class="blog-img-wrapper">
-                             <img class="lazy" data-src="{{asset('assets/front/img/blogs/'.$blog->main_image)}}" alt="" />
+                             <img class="lazy" data-src="{{asset('assets/front/img/blogs/'.$blog->main_image)}}" alt="">
                           </div>
                           <div class="blog-txt">
                             @php
@@ -49,17 +49,13 @@
 
                                 $blogDate = $blogDate->translatedFormat('jS F, Y');
                             @endphp
-                                        @if($blog->author != null)                             
-                                    <p class="date"><small>{{__('By')}}     <span class="username">{{$blog->author}}</span></small> | <small>{{$blogDate}}</small> </p>
-                                        @else
-                                    <p class="date"><small>{{__('By')}}     <span class="username">{{$blog->author}}  {{__('Admin')}}</span></small> | <small>{{$blogDate}}</small> </p>
-                                        @endif 
+                             <p class="date"><small>{{__('By')}} <span class="username">{{__('Admin')}}</span></small> | <small>{{$blogDate}}</small> </p>
 
-                             <h4 class="blog-title"><a href="{{route('front.blogdetails', [$blog->id])}}">{{strlen($blog->title) > 30 ? mb_substr($blog->title, 0, 30, 'utf-8') . '...' : $blog->title}}</a></h4>
+                             <h4 class="blog-title"><a href="{{route('front.blogdetails', [$blog->slug])}}">{{strlen($blog->title) > 40 ? mb_substr($blog->title, 0, 40, 'utf-8') . '...' : $blog->title}}</a></h4>
 
                              <p class="blog-summary">{!! strlen(strip_tags($blog->content)) > 100 ? mb_substr(strip_tags($blog->content), 0, 100, 'utf-8') . '...' : strip_tags($blog->content) !!}</p>
 
-                             <a href="{{route('front.blogdetails', [$blog->id])}}" class="readmore-btn"><span>{{__('Read More')}}</span></a>
+                             <a href="{{route('front.blogdetails', [$blog->slug])}}" class="readmore-btn"><span>{{__('Read More')}}</span></a>
 
                           </div>
                        </div>
@@ -103,7 +99,40 @@
                        </ul>
                     </div>
                  </div>
-                 <!--archives-->
+                 <div class="blog-sidebar-widgets category-widget">
+                    <div class="category-lists job">
+                       <h4>{{__('Archives')}}</h4>
+                       <ul>
+                          @foreach ($archives as $key => $archive)
+                            @php
+                              $myArr = explode('-', $archive->date);
+                              $monthNum  = $myArr[0];
+                              $dateObj   = DateTime::createFromFormat('!m', $monthNum);
+                              $monthName = $dateObj->format('F');
+                            @endphp
+                            <li class="single-category @if(request()->input('month') == $myArr[0] && request()->input('year') == $myArr[1]) active @endif">
+                                <a href="{{route('front.blogs', ['term'=>request()->input('term'), 'category'=>request()->input('category'),'month'=>$myArr[0], 'year'=>$myArr[1]])}}">
+
+                                    @php
+                                        if (!empty($currentLang)) {
+                                            $monthName = \Carbon\Carbon::parse($monthName)->locale("$currentLang->code");
+                                            $year = \Carbon\Carbon::parse($myArr[1])->locale("$currentLang->code");
+                                        } else {
+                                            $monthName = \Carbon\Carbon::parse($monthName)->locale("en");
+                                            $year = \Carbon\Carbon::parse($myArr[1])->locale("en");
+                                        }
+
+                                        $monthName = $monthName->translatedFormat('F');
+                                        $year = $year->translatedFormat('Y');
+                                    @endphp
+
+                                    {{$monthName}} {{$year}}
+                                </a>
+                            </li>
+                          @endforeach
+                       </ul>
+                    </div>
+                 </div>
                  <div class="subscribe-section">
                     <span>{{__('SUBSCRIBE')}}</span>
                     <h3>{{__('SUBSCRIBE FOR NEWSLETTER')}}</h3>

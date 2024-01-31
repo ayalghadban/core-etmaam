@@ -6,7 +6,7 @@
     <div class="row">
        <div class="col-lg-2 col-6">
           <div class="logo-wrapper">
-             <a href="{{route('front.index')}}"><img class="officallogo lazy" data-src="{{asset('assets/front/img/'.$bs->logo)}}" alt=""></a>
+             <a href="{{route('front.index')}}"><img class="lazy" data-src="{{asset('assets/front/img/'.$bs->logo)}}" alt=""></a>
           </div>
        </div>
        <div class="col-lg-10 col-6 {{$rtl == 1 ? 'text-left' : 'text-right'}} position-static">
@@ -61,17 +61,8 @@
 
              @endforeach
 
-             @if ($bs->is_quote == 0)
-             <li>
-                  @if (request()->route()->uri != 'lp') 
-                 <a href="/serv_req" class="boxed-btn">{{__('Request A Quote')}}</a>
-                 @endif
-                 
-                 @if (request()->route()->uri == 'lp') 
-                 <a href="/serv_req?msource=google" class="boxed-btn">{{__('Request A Quote')}}</a>
-                 @endif
-
-                 </li>
+             @if ($bs->is_quote == 1)
+             <li><a href="{{route('front.quote')}}" class="boxed-btn">{{__('Request A Quote')}}</a></li>
              @endif
           </ul>
           <div id="mobileMenu"></div>

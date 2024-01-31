@@ -14,21 +14,9 @@
 @section('content')
 
 
-
   <!--   quote area start   -->
   <div class="quote-area pt-115 pb-115">
     <div class="container">
-        
-        <div class="row">
-                <div class="col-12">
-                    <div class="demo alert alert-warning text-center alert-dismissable">
-                        <div><span><img src="https://etmaam.com.sa/assets/front/img/2323.svg"></span> عزيزي العميل : يسعدنا خدمتكم .. نرجوا تعبئة البيانات التالية واختيار الخدمة المطلوبة وسوف يتم التواصل معكم من أحد أعضاء فريق إتمام في أقرب وقت ممكن <br>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            
       <div class="row">
 
         <div class="col-lg-12">

@@ -87,9 +87,7 @@
                     <div class="outer-container">
                         <div class="inner-container">
                             <div class="icon-wrapper">
-                            <!--<i class="{{$feature->icon}}"></i>-->
-                            <img src="{{$feature->icon}}" width="50px" hegith="50px">
-
+                            <i class="{{$feature->icon}}"></i>
                             </div>
                             <h3>{{convertUtf8($feature->title)}}</h3>
                         </div>

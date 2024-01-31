@@ -3,10 +3,10 @@
       <div class="hero-txt">
          <div class="row">
             <div class="col-12">
-               <span>{!! convertUtf8($bs->hero_section_title) !!}</span>
-               <h3 style="font-weight:400!important" class="slider-des">{{convertUtf8($bs->hero_section_text)}}</h3>
+               <span>{{convertUtf8($bs->hero_section_title)}}</span>
+               <h1>{{convertUtf8($bs->hero_section_text)}}</h1>
                @if (!empty($bs->hero_section_button_url) && !empty($bs->hero_section_button_text))
-               <a href="{{$bs->hero_section_button_url}}" class="hero-boxed-btn">{{convertUtf8($bs->hero_section_button_text)}}</a>
+               <a href="{{$bs->hero_section_button_url}}" class="hero-boxed-btn" target="_blank">{{convertUtf8($bs->hero_section_button_text)}}</a>
                @endif
             </div>
          </div>

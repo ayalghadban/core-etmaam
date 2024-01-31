@@ -1,39 +1,6 @@
 <!DOCTYPE html>
-<html lang="{{convertUtf8($currentLang->code)}}">
+<html lang="en">
    <head>
-       
-       <!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-KTDJRWT');</script>
-<!-- End Google Tag Manager -->
-
-
-
-
-
-		
-<!-- Meta Pixel Code -->
-<script>
-!function(f,b,e,v,n,t,s)
-{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-n.queue=[];t=b.createElement(e);t.async=!0;
-t.src=v;s=b.getElementsByTagName(e)[0];
-s.parentNode.insertBefore(t,s)}(window, document,'script',
-'https://connect.facebook.net/en_US/fbevents.js');
-fbq('init', '1933895050316232');
-fbq('track', 'PageView');
-</script>
-<noscript><img height="1" width="1" style="display:none"
-src="https://www.facebook.com/tr?id=1933895050316232&ev=PageView&noscript=1"
-/></noscript>
-
- 
-
       <!--Start of Google Analytics script-->
       @if ($bs->is_analytics == 1)
       {!! $bs->google_analytics_script !!}
@@ -43,8 +10,6 @@ src="https://www.facebook.com/tr?id=1933895050316232&ev=PageView&noscript=1"
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
       <meta http-equiv="X-UA-Compatible" content="IE=edge" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="format-detection" content="telephone=no">
-
 
       <meta name="description" content="@yield('meta-description')">
       <meta name="keywords" content="@yield('meta-keywords')">
@@ -63,22 +28,10 @@ src="https://www.facebook.com/tr?id=1933895050316232&ev=PageView&noscript=1"
 
       <!-- common css -->
       <link rel="stylesheet" href="{{asset('assets/front/css/common-style.css')}}">
-      
-      <link rel="stylesheet" id='wppu-css' href="{{asset('assets/front/css/wppu-admin.css?ver=1.0.0')}}" media='all' />
-      
-
-
-
-
-
-
       @yield('styles')
 
       @if ($bs->is_tawkto == 1 || $bex->is_whatsapp == 1)
       <style>
-      #wppu-object-wrapper {
-    position: sticky !important;
-      }
         .back-to-top.show {
             right: auto;
             left: 20px;
@@ -93,61 +46,9 @@ src="https://www.facebook.com/tr?id=1933895050316232&ev=PageView&noscript=1"
       .support-bar-area ul.social-links::after {
           display: none;
       }
-      
       </style>
       @endif
-      
-      
-      
-   <style>
-    .top-footer-section {
-    padding: 70px 0 40px 0 !important;
-    border-bottom: 1px solid #9d9d9d !important;
-}
-.sheild {
-    text-align: start !important;
-}
 
-.copyright-section {
-    padding: 15px 0 15px !important;
-    font-size: 14px !important;
-    line-height: 49px !important;
-}
-.footerWithVat{
-    text-align: end !important;
-}
-.footer-txt-copy {
-    font-size: 15px !important;
-    color: white !important;
-  
-}
-
-
-@media only screen and (max-width:767px) {
-  .copyright-section {
-    font-size: 14px !important;
-    line-height: 26px !important;
-}
-   .sheild {
-    text-align: center !important;
-    margin-bottom: 5px;
-} 
-.footerWithVat {
-    text-align: center !important;
-}
-
-.footer-txt-copy {
-    font-size: 12px !important;
-
-}
-.support-contact-info {
-    margin-bottom: 0 !important;
-}
-.hero-txt {
-    padding: 280px 0 90px 0 !important ;
-}
-}
-      </style>
       <!-- responsive css -->
       <link rel="stylesheet" href="{{asset('assets/front/css/responsive.css')}}">
       <!-- common base color change -->
@@ -191,46 +92,7 @@ src="https://www.facebook.com/tr?id=1933895050316232&ev=PageView&noscript=1"
 
 
 
-   <body @if($rtl == 1) dir="rtl"  @endif>
-       
-       
-    <div @if (request()->route()->uri != 'lp') class="mobile-serv d-block  d-md-none" style="position: fixed;
-    bottom: 22px;
-    right: 36%;
-    z-index: 99999;
-    border-radius: 5px;">
-        <a style="border-radius: 50px;" href="{{route('front.serv_req')}}" class="boxed-btn shine">{{__('Request A Quote')}}</a>
-   @endif
-    </div>
-        <!--====== PRELOADER PART START ======-->
-        <!--@if ($bex->preloader_status == 1)-->
-        <div id="preloader">
-            <div class="loader revolve">
-                <!--<img src="{{asset('assets/front/img/' . $bex->preloader)}}" alt="">-->
-
-    
-        <div id="wppu-object-wrapper" class="lifebeauty" style="width:500px;height:500px;padding:13%;">
-				<div class="wppu-object-logo">
-				    
-				  @if($rtl == 1)
-					<img src="https://etmaam.com.sa/assets/front/img/14241353-min.png" class="officallogo" style=";">
-					@elseif($rtl == 0)
-				<img src="https://etmaam.com.sa/assets/front/img/lifeisgood.png" style=";">
-					@endif
-				</div>
-				<div class="wpppu-object-wrap" style="color:#235577;"></div>
-			</div>
-
-
-
-            </div>
-        </div>
-        <!--@endif-->
-        <!--====== PRELOADER PART ENDS ======-->
-
-
-
-
+   <body @if($rtl == 1) dir="rtl" @endif>
 
       <!--   header area start   -->
       <div class="header-area header-absolute @yield('no-breadcrumb')">
@@ -247,56 +109,17 @@ src="https://www.facebook.com/tr?id=1933895050316232&ev=PageView&noscript=1"
                          <li><a target="_blank" href="{{$social->url}}"><i class="{{$social->icon}}"></i></a></li>
                        @endforeach
                      </ul>
-                    
-                    
-                    <!--OLD CHANGE LANGAUGE SAVE IT-->
-                    <!-- @if (!empty($currentLang) && count($langs) > 1)-->
-                    <!--   <div class="language">-->
-                    <!--      <a class="language-btn" href="#"><i class="flaticon-worldwide"></i> {{convertUtf8($currentLang->name)}}</a>-->
-                    <!--      <ul class="language-dropdown">-->
-                    <!--        @foreach ($langs as $key => $lang)-->
-                    <!--        <li><a href='{{ route('changeLanguage', $lang->code) }}'>{{convertUtf8($lang->name)}}</a></li>-->
-                    <!--        @endforeach-->
-                    <!--      </ul>-->
-                    <!--   </div>-->
-                    <!-- @endif-->
-                
 
-                                        @if(str_contains(request()->url(), 'blog/'))
-                            @php
-                            // كود كامل تم تعديله لتغيير اللغة لحل مشكلة الخبر والتنقل باللغات
-                                $segments = request()->segments();
-                                $articleId = end($segments); 
-                                $currentArticle = \App\Blog::find($articleId);
-                                $relatedArticleId = $currentArticle ? $currentArticle->related_article_id : null;
-                            @endphp
-
-                                    @if($relatedArticleId != null)
-                            <div class="language">
-                                @foreach ($langs as $key => $lang)
-                                    @if($lang->code != $currentLang->code)
-                                        <a href="{{ route('changeLanguage', ['lang' => $lang->code, 'redirect' => 'blog/' . $relatedArticleId]) }}"><i class="flaticon-worldwide"></i> <span style="padding-right: 2px;">
-                                            {{convertUtf8($lang->name)}}
-                                        </span></a>
-                                    @endif
-                                @endforeach
-                            </div>
-                                    @endif
-                        @else
-                            <div class="language">
-                                @foreach ($langs as $key => $lang)
-                                    @if($lang->code != $currentLang->code)
-                                        <a href="{{ route('changeLanguage', $lang->code) }}"><i class="flaticon-worldwide"></i> <span style="padding-right: 2px;">
-                                            {{convertUtf8($lang->name)}}
-                                        </span></a>
-                                    @endif
-                                @endforeach
-                            </div>
-                        @endif
-
-
-                
-                     
+                     @if (!empty($currentLang) && count($langs) > 1)
+                       <div class="language">
+                          <a class="language-btn" href="#"><i class="flaticon-worldwide"></i> {{convertUtf8($currentLang->name)}}</a>
+                          <ul class="language-dropdown">
+                            @foreach ($langs as $key => $lang)
+                            <li><a href='{{ route('changeLanguage', $lang->code) }}'>{{convertUtf8($lang->name)}}</a></li>
+                            @endforeach
+                          </ul>
+                       </div>
+                     @endif
 
                      @guest
                         @if ($bex->is_user_panel == 1)
@@ -399,7 +222,7 @@ src="https://www.facebook.com/tr?id=1933895050316232&ev=PageView&noscript=1"
                         <span>@yield('breadcrumb-title')</span>
                         <h1>@yield('breadcrumb-subtitle')</h1>
                         <ul class="breadcumb">
-                        <li><a style="position:relative;z-index:999;" href="{{route('front.index')}}">{{__('Home')}}</a></li>
+                        <li><a href="{{route('front.index')}}">{{__('Home')}}</a></li>
                         <li>@yield('breadcrumb-link')</li>
                         </ul>
                     </div>
@@ -432,7 +255,7 @@ src="https://www.facebook.com/tr?id=1933895050316232&ev=PageView&noscript=1"
                            {{mb_substr($bs->footer_text, 0, 194, 'UTF-8')}}<span style="display: none;">{{mb_substr($bs->footer_text, 194, null, 'UTF-8')}}</span>
                            <a href="#" class="see-more">{{__('see more')}}...</a>
                         @else
-                           {!! $bs->footer_text !!}
+                           {{$bs->footer_text}}
                         @endif
                     </p>
                   </div>
@@ -466,7 +289,7 @@ src="https://www.facebook.com/tr?id=1933895050316232&ev=PageView&noscript=1"
                                 @foreach ($addresses as $address)
                                 {{$address}}
                                 @if (!$loop->last)
-                                    <br>
+                                    |
                                 @endif
                                 @endforeach
                             </span>
@@ -506,33 +329,12 @@ src="https://www.facebook.com/tr?id=1933895050316232&ev=PageView&noscript=1"
             @endif
 
             @if (!($bex->home_page_pagebuilder == 0 && $bs->copyright_section == 0))
-           <div class="copyright-section copy-2">
-                <div class="row">
-                    <div class="col-12 col-md-8 ">
-                        <div class="sheild"> <i class="fas fa-shield-alt m-1"></i>
-              
-                                   {!! replaceBaseUrl(convertUtf8($bs->copyright_text)) !!}
-
-              
+            <div class="copyright-section">
+               <div class="row">
+                  <div class="col-sm-12 text-center">
+                     {!! replaceBaseUrl(convertUtf8($bs->copyright_text)) !!}
+                  </div>
                </div>
-                    </div>
-                    <div class="col-12 col-md-4  ">
-                        <div class="footerWithVat"><a class="vatLink"
-                                href="https://etmaam.com.sa/assets/front/files/vat.pdf"
-                                target="_blank"> <img class="lazy" src="assets/front/img/VAT.png" width="30px" alt=""></a>
-                               <a class=""
-                                href="https://maroof.sa/210160"
-                                target="_blank">
-                             <img  class="lazy" width="100px" src="assets/front/img/ma3rof.png" alt="">
-                               </a>
-                                </div>
-                    </div>
-                    <div class="col-12   ">
-                        <p class="footer-txt-copy text-center">
-                     {!! __('All rights reserved to Etmam Services © 2022') !!}
-                        </p>
-                    </div>
-                </div>
             </div>
             @endif
          </div>
@@ -543,6 +345,15 @@ src="https://www.facebook.com/tr?id=1933895050316232&ev=PageView&noscript=1"
       {{-- WhatsApp Chat Button --}}
       <div id="WAButton"></div>
 
+        <!--====== PRELOADER PART START ======-->
+        @if ($bex->preloader_status == 1)
+        <div id="preloader">
+            <div class="loader revolve">
+                <img src="{{asset('assets/front/img/' . $bex->preloader)}}" alt="">
+            </div>
+        </div>
+        @endif
+        <!--====== PRELOADER PART ENDS ======-->
 
         @if ($bex->is_shop == 1 && $bex->catalog_mode == 0)
             <div id="cartIconWrapper">
@@ -569,7 +380,7 @@ src="https://www.facebook.com/tr?id=1933895050316232&ev=PageView&noscript=1"
 
       {{-- Cookie alert dialog start --}}
       @if ($be->cookie_alert_status == 1)
-      @include('cookieConsent::index')
+      @include('cookie-consent::index')
       @endif
       {{-- Cookie alert dialog end --}}
 
@@ -581,19 +392,12 @@ src="https://www.facebook.com/tr?id=1933895050316232&ev=PageView&noscript=1"
         $mainbs = [];
         $mainbs = json_encode($mainbs);
       @endphp
-      
-      
-
       <script>
         var mainbs = {!! $mainbs !!};
         var mainurl = "{{url('/')}}";
         var vap_pub_key = "{{env('VAPID_PUBLIC_KEY')}}";
         var rtl = {{ $rtl }};
       </script>
-      
-      <!--loader js-->
-      <script src="{{asset('assets/front/js/wppu-preloader-unlimited/admin/js/wppu-admin.js?ver=1.0.0')}}"  id='wppu-js'></script>
-
       <!-- popper js -->
       <script src="{{asset('assets/front/js/popper.min.js')}}"></script>
       <!-- bootstrap js -->
@@ -604,18 +408,6 @@ src="https://www.facebook.com/tr?id=1933895050316232&ev=PageView&noscript=1"
       <script src="{{asset('assets/front/js/main.js')}}"></script>
       <!-- pagebuilder custom js -->
       <script src="{{asset('assets/front/js/common-main.js')}}" defer></script>
-
-
-
-<!--LOAD JS OR CSS TO IMPROVE SPEED -->
-<script>
-//     window.onload = function(){
-//   $.getScript("https://etmaam.com.sa/assets/front/js/packagesrules.js");
-//     $.getScript("https://etmaam.com.sa/assets/front/js/axios.min.js");
-
-// }
-</script>
-
 
       {{-- whatsapp init code --}}
       @if ($bex->is_whatsapp == 1)
@@ -629,7 +421,7 @@ src="https://www.facebook.com/tr?id=1933895050316232&ev=PageView&noscript=1"
                     popupMessage: `{!! nl2br($bex->whatsapp_popup_message) !!}`, //Popup Message
                     showPopup: whatsapp_popup == 1 ? true : false, //Enables popup display
                     buttonImage: '<img src="' + whatsappImg + '" />', //Button Image
-                    position: "left" //Position: left | right
+                    position: "right" //Position: left | right
 
                 });
             });
@@ -673,7 +465,7 @@ src="https://www.facebook.com/tr?id=1933895050316232&ev=PageView&noscript=1"
                 if ((data.errors)) {
                   $this.find(".err-email").html(data.errors.email[0]);
                 } else {
-                  toastr["success"]("{{__('messages.subcribed_msg')}}");
+                  toastr["success"]("You are subscribed successfully!");
                   $this.trigger('reset');
                   $this.find(".err-email").html('');
                 }
@@ -688,17 +480,7 @@ src="https://www.facebook.com/tr?id=1933895050316232&ev=PageView&noscript=1"
 
       <!--Start of Tawk.to script-->
       @if ($bs->is_tawkto == 1)
-    
-    <!--Check Langauge Tawk.to  -->
-        @if($rtl == 1)
       {!! $bs->tawk_to_script !!}
-      @elseif($rtl == 0)
-<script>
-var Tawk_API=Tawk_API||{},Tawk_LoadStart=new Date;!function(){var e=document.createElement("script"),t=document.getElementsByTagName("script")[0];e.async=!0,e.src="https://embed.tawk.to/5f5f7bcf4704467e89eed175/1g6vbf960",e.charset="UTF-8",e.setAttribute("crossorigin","*"),t.parentNode.insertBefore(e,t)}();
-</script> 
-@endif
- 	   <!-- END Check Langauge Tawk.to  -->
-
       @endif
       <!--End of Tawk.to script-->
 
@@ -707,44 +489,5 @@ var Tawk_API=Tawk_API||{},Tawk_LoadStart=new Date;!function(){var e=document.cre
       {!! $bs->addthis_script !!}
       @endif
       <!--End of AddThis script-->
-      
-      
-      
-
-
-  @if (request()->route()->uri != 'banks') 
-<!--script>-->
-<!--    document.onkeydown = function (e) {-->
-<!--        if (e.ctrlKey &&-->
-<!--            (e.keyCode === 67 ||-->
-<!--                e.keyCode === 86 ||-->
-<!--                e.keyCode === 85 ||-->
-<!--                e.keyCode === 117)) {-->
-<!--            alert('Not allowed to copy content!');-->
-<!--            return false;-->
-<!--        } else if (e.ctrlKey && e.shiftKey && e.keyCode === 73) {-->
-<!--            // Ctrl+Shift+I (inspect element) - Disable-->
-<!--            alert('Inspect element is disabled');-->
-<!--            return false;-->
-<!--        } else if (e.ctrlKey && e.shiftKey && e.keyCode === 74) {-->
-<!--            // Ctrl+Shift+J (JavaScript console) - Disable-->
-<!--            alert('JavaScript console is disabled');-->
-<!--            return false;-->
-<!--        } else if (e.keyCode === 123) {-->
-<!--            // F12 (Open Developer Tools) - Disable-->
-<!--            alert('Developer tools are disabled');-->
-<!--            return false;-->
-<!--        } else {-->
-<!--            return true;-->
-<!--        }-->
-<!--    };-->
-
-<!--    document.oncontextmenu = function () {-->
-<!--        // Disable right-click context menu-->
-<!--        alert('Right-click context menu is disabled');-->
-<!--        return false;-->
-<!--    };-->
-<!--</script>-->
-        @endif
    </body>
 </html>

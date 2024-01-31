@@ -42,7 +42,7 @@
                 @endif
                 @if (!empty(convertUtf8($job->educational_requirements)))
                 <div class="info">
-                    <strong class="label">{{__('app.reqirments')}}</strong>
+                    <strong class="label">Educational Requirements</strong>
                     <div class="desc">
                         {!! replaceBaseUrl(convertUtf8($job->educational_requirements)) !!}
                     </div>
@@ -56,14 +56,14 @@
                     </div>
                 </div>
                 @endif
-                <!--@if (!empty(convertUtf8($job->additional_requirements)))-->
-                <!--<div class="info">-->
-                <!--    <strong class="label">{{__('Additional Requirements')}}</strong>-->
-                <!--    <div class="desc">-->
-                <!--        {!! replaceBaseUrl(convertUtf8($job->additional_requirements)) !!}-->
-                <!--    </div>-->
-                <!--</div>-->
-                <!--@endif-->
+                @if (!empty(convertUtf8($job->additional_requirements)))
+                <div class="info">
+                    <strong class="label">{{__('Additional Requirements')}}</strong>
+                    <div class="desc">
+                        {!! replaceBaseUrl(convertUtf8($job->additional_requirements)) !!}
+                    </div>
+                </div>
+                @endif
                 @if (!empty(convertUtf8($job->job_location)))
                 <div class="info">
                     <strong class="label">{{__('Job Location')}}</strong>
@@ -72,23 +72,22 @@
                     </div>
                 </div>
                 @endif
-                <!--@if (!empty(convertUtf8($job->salary)))-->
-                <!--<div class="info">-->
-                <!--    <strong class="label">{{__('Salary')}}</strong>-->
-                <!--    <div class="desc">-->
-                <!--        {!! replaceBaseUrl(convertUtf8($job->salary)) !!}-->
-                <!--    </div>-->
-                <!--</div>-->
-                <!--@endif-->
-                
-                <!--@if (!empty(convertUtf8($job->benefits)))-->
-                <!--<div class="info">-->
-                <!--    <strong class="label">{{__('Compensation & Other Benefits')}}</strong>-->
-                <!--    <div class="desc">-->
-                <!--        {!! replaceBaseUrl(convertUtf8($job->benefits)) !!}-->
-                <!--    </div>-->
-                <!--</div>-->
-                <!--@endif-->
+                @if (!empty(convertUtf8($job->salary)))
+                <div class="info">
+                    <strong class="label">{{__('Salary')}}</strong>
+                    <div class="desc">
+                        {!! replaceBaseUrl(convertUtf8($job->salary)) !!}
+                    </div>
+                </div>
+                @endif
+                @if (!empty(convertUtf8($job->benefits)))
+                <div class="info">
+                    <strong class="label">{{__('Compensation & Other Benefits')}}</strong>
+                    <div class="desc">
+                        {!! replaceBaseUrl(convertUtf8($job->benefits)) !!}
+                    </div>
+                </div>
+                @endif
                 @if (!empty(convertUtf8($job->read_before_apply)))
                 <div class="info">
                     <strong class="label">{{__('Read Before Apply')}}</strong>

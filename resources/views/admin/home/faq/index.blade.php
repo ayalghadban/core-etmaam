@@ -183,17 +183,6 @@ $selLang = \App\Language::where('code', request()->input('language'))->first();
             <p id="errserial_number" class="mb-0 text-danger em"></p>
             <p class="text-warning"><small>The higher the serial number is, the later the FAQ will be shown.</small></p>
           </div>
-          
-            <label for="">feature **</label>
-            <select name="feature" class="form-control ltr">
-              <option selected disabled>Select a area</option>
-              <option value="0">Faqs Page</option>
-              <option value="1">Home Page</option>
-              <option value="2">Packages</option>
-            </select>
-            <p id="errfeature" class="mt-1 mb-0 text-danger em"></p>
-
-          
         </form>
       </div>
       <div class="modal-footer">
@@ -248,19 +237,6 @@ $selLang = \App\Language::where('code', request()->input('language'))->first();
             <p id="eerrserial_number" class="mb-0 text-danger em"></p>
             <p class="text-warning"><small>The higher the serial number is, the later the FAQ will be shown.</small></p>
           </div>
-          
-         <div class="form-group">
-            <label for="">feature **</label>
-            <select name="feature" class="form-control ltr">
-              <option selected disabled>Select a area</option>
-              <option value="0">Faqs Page</option>
-              <option value="1">Home Page</option>
-              <option value="2">Packages</option>
-            </select>
-            <p id="errfeature" class="mt-1 mb-0 text-danger em"></p>
-          </div>
-
-          
         </form>
       </div>
       <div class="modal-footer">

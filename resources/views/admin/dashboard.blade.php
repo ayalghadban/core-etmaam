@@ -11,12 +11,6 @@ if (!empty($admin->role)) {
     <h2 class="text-white pb-2">Welcome back, {{Auth::guard('admin')->user()->first_name}} {{Auth::guard('admin')->user()->last_name}}!</h2>
 </div>
 <div class="row">
-    
-    @if ($admin->id == 8) 
-<script type="text/javascript">
-    window.location.href = "https://etmaam.com.sa/admin/request/list?language=ar";
-</script>
-    @endif
     @if (empty($admin->role) || (!empty($permissions) && in_array('Package Management', $permissions)))
     <div class="col-sm-6 col-md-3">
         <a href="{{route('admin.package.index') . '?language=' . $default->code}}" class="d-block">

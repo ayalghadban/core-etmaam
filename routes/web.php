@@ -24,7 +24,7 @@ Route::fallback(function () {
 Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['web', 'auth:admin', 'setLfmPath']], function () {
     \UniSharp\LaravelFilemanager\Lfm::routes();
     Route::post('summernote/upload', 'Admin\SummernoteController@uploadFileManager')->name('lfm.summernote.upload');
-})->name('lmf');
+});
 
 Route::get('/backup', 'Front\FrontendController@backup');
 
