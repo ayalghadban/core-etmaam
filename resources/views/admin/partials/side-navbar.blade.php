@@ -1349,6 +1349,49 @@ id="course"
 
 
 
+
+<li class="nav-item
+@if(request()->path() == 'admin/roles') active
+@elseif(request()->is('admin/role/*/permissions/manage')) active
+@elseif(request()->path() == 'admin/users') active
+@elseif(request()->is('admin/user/*/edit')) active
+@endif">
+<a data-toggle="collapse" href="#adminsManagement2">
+    <i class="fas fa-users-cog"></i>
+    <p>Requests Website</p>
+    <span class="caret"></span>
+</a>
+<div class="collapse
+@if(request()->path() == 'admin/roles') show
+@elseif(request()->is('admin/role/*/permissions/manage')) show
+@elseif(request()->path() == 'admin/users') show
+@elseif(request()->is('admin/user/*/edit')) show
+@endif" id="adminsManagement2">
+<ul class="nav nav-collapse">
+<li class="
+@if(request()->path() == 'admin/users') active
+@elseif(request()->is('admin/user/*/edit')) active
+@endif">
+<a href="https://etmaam.com.sa/admin/requests?language=ar">
+    <span class="sub-item">Services Requests</span>
+</a>
+</li>
+
+<li class="
+@if(request()->path() == 'admin/users') active
+@elseif(request()->is('admin/user/*/edit')) active
+@endif">
+<a href="https://etmaam.com.sa/admin/request/list?language=ar">
+    <span class="sub-item">Services List</span>
+</a>
+</li>
+
+</ul>
+</div>
+</li>
+
+
+
 @if (empty($admin->role) || (!empty($permissions) && in_array('Client Feedbacks', $permissions)))
 {{-- Client Feedbacks --}}
 <li class="nav-item @if(request()->path() == 'admin/feedbacks') active @endif">

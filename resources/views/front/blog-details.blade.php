@@ -20,7 +20,18 @@
            <div class="{{$blog->sidebar == 1 ? 'col-lg-7' : 'col-12'}}">
               <div class="blog-details">
                  <img class="blog-details-img-1 lazy" data-src="{{asset('assets/front/img/blogs/'.$blog->main_image)}}" alt="">
-                 <small class="date">{{date('F d, Y', strtotime($blog->created_at))}}  -  {{__('BY')}} {{__('Admin')}}</small>
+                 
+                 <small class="date">
+                     {{date('F d, Y', strtotime($blog->created_at))}} 
+                 @if($blog->author != null)   
+                 -  {{__('BY')}} {{$blog->author}}
+                 @else
+                 -  {{__('BY')}} {{__('Admin')}}
+                 @endif
+
+                     </small>
+    <!--عدد المشاهدات: {{ $blog->views }}-->
+
                  <h2 class="blog-details-title">{{convertUtf8($blog->title)}}</h2>
                  <div class="blog-details-body">
                    {!! replaceBaseUrl(convertUtf8($blog->content)) !!}
@@ -29,8 +40,10 @@
               <div class="blog-share mb-5">
                  <ul>
                     <li><a href="https://www.facebook.com/sharer/sharer.php?u={{urlencode(url()->current()) }}" class="facebook-share"><i class="fab fa-facebook-f"></i> {{__('Share')}}</a></li>
-                    <li><a href="https://twitter.com/intent/tweet?text=my share text&amp;url={{urlencode(url()->current()) }}" class="twitter-share"><i class="fab fa-twitter"></i> {{__('Tweet')}}</a></li>
+                    <li><a href="https://twitter.com/intent/tweet?text={{convertUtf8($blog->title)}}&amp;url={{urlencode(url()->current()) }}" class="twitter-share"><i class="fab fa-twitter"></i> {{__('Tweet')}}</a></li>
+                    <li><a href="https://api.whatsapp.com/send?text={{convertUtf8($blog->title)}}%20{{urlencode(url()->current())}}" class="whatsapp-share"><i class="fab fa-whatsapp"></i> {{__('WhatsApp')}}</a></li>
                     <li><a href="http://www.linkedin.com/shareArticle?mini=true&amp;url={{urlencode(url()->current()) }}&amp;title={{convertUtf8($blog->title)}}" class="linkedin-share"><i class="fab fa-linkedin-in"></i> {{__('Linkedin')}}</a></li>
+
                  </ul>
               </div>
 
@@ -65,7 +78,7 @@
                         </ul>
                         </div>
                     </div>
-                    <div class="blog-sidebar-widgets category-widget">
+                    <div class="blog-sidebar-widgets category-widget hide">
                         <div class="category-lists job">
                         <h4>{{__('Archives')}}</h4>
                         <ul>

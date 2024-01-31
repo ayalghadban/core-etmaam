@@ -20,8 +20,6 @@
                 assets/front/img/
             @elseif ($permission['folder'] == '../assets/front/invoices/')
                 assets/front/invoices/
-            @elseif ($permission['folder'] == '../assets/front/ndas/')
-                assets/front/ndas/
             @elseif ($permission['folder'] == '../assets/front/receipt/')
                 assets/front/receipt/
             @elseif ($permission['folder'] == '../assets/front/temp/')
