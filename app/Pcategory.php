@@ -3,16 +3,21 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Pcategory extends Model
 {
     protected $fillable = ['name','image','language_id','status','slug'];
 
-    public function products() {
-        return $this->hasMany('App\Product','category_id','id');
+    //Relations
+    public function products() :HasMany
+    {
+        return $this->hasMany(Product::class,'category_id','id');
     }
 
-    public function language() {
-        return $this->belongsTo('App\Language');
+    public function language()  :BelongsTo
+    {
+        return $this->belongsTo(Language::class);
     }
 }

@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
@@ -68,19 +69,19 @@ class User extends Authenticatable
     'email_verified_at' => 'datetime',
   ];
 
-  public function conversations()
+  public function conversations() :HasMany
   {
-    return $this->hasMany('App\Conversation');
+    return $this->hasMany(Conversation::class);
   }
 
-  public function orders()
+  public function orders() : HasMany
   {
-    return $this->hasMany('App\ProductOrder');
+    return $this->hasMany(ProductOrder::class);
   }
 
-  public function order_items()
+  public function order_items() : HasMany
   {
-    return $this->hasMany('App\OrderItem');
+    return $this->hasMany(OrderItem::class);
   }
 
   public function courseOrder()
