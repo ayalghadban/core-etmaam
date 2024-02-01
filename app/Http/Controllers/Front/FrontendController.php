@@ -49,6 +49,7 @@ use App\Mail\OrderQuote;
 use App\OfflineGateway;
 use App\PackageCategory;
 use App\PackageInput;
+use App\PackageRequest;
 use App\PaymentGateway;
 use App\Pcategory;
 use App\Product;
@@ -57,6 +58,7 @@ use App\Request;
 use App\RequestCategory;
 use App\RssFeed;
 use App\RssPost;
+use App\Section;
 use App\ServiceRequest;
 use App\Subscription;
 use Session;
@@ -93,6 +95,13 @@ class FrontendController extends Controller
         $bex = $currentLang->basic_extra;
         $lang_id = $currentLang->id;
 
+        $data['categories'] = PackageCategory::where('language_id', $currentLang->id)
+            ->where('status', 1)->orderBy('serial_number', 'ASC')->get();
+        $data['sections'] = Section::with('packages')->where('active', 1)->where('language_id', $currentLang->id)->get();
+        //     $data['cats'] = App\RequestCategory::with('services')->where('language_id',$currentLang->id)->orderBy('order_cat_pack', 'ASC')->get();
+        $data['cats'] = RequestCategory::with('services')->where('language_id', $currentLang->id)->orderBy('order_cat_pack', 'ASC')->get();
+
+
         $data['sliders'] = Slider::where('language_id', $lang_id)->orderBy('serial_number', 'ASC')->get();
         $data['features'] = Feature::where('language_id', $lang_id)->orderBy('serial_number', 'ASC')->get();
         $version = $be->theme_version;
@@ -103,12 +112,14 @@ class FrontendController extends Controller
             $data['points'] = Point::where('language_id', $lang_id)->orderBy('serial_number', 'ASC')->get();
             $data['statistics'] = Statistic::where('language_id', $lang_id)->orderBy('serial_number', 'ASC')->get();
             $data['testimonials'] = Testimonial::where('language_id', $lang_id)->orderBy('serial_number', 'ASC')->get();
-            $data['faqs'] = Faq::orderBy('serial_number', 'ASC')->get();
+            $data['faqs'] = Faq::where('language_id', $lang_id)->orderBy('serial_number', 'ASC')->where('feature', 1)->where('deleted', 0)->get();
+
             $data['members'] = Member::where('language_id', $lang_id)->where('feature', 1)->get();
-            $data['blogs'] = Blog::where('language_id', $lang_id)->orderBy('id', 'DESC')->limit(6)->get();
+            $data['blogs'] = Blog::where('language_id', $lang_id)->orderBy('created_at', 'DESC')->limit(3)->get();
             $data['partners'] = Partner::where('language_id', $lang_id)->orderBy('serial_number', 'ASC')->get();
             $data['packages'] = Package::where('language_id', $lang_id)->where('feature', 1)->orderBy('serial_number', 'ASC')->get();
-            $data['scategories'] = Scategory::where('language_id', $lang_id)->where('feature', 1)->where('status', 1)->orderBy('serial_number', 'ASC')->get();
+            $data['scategories'] = Scategory::where('language_id', $lang_id)->where('feature', 1)->where('status', 1)->where('type', null)->orderBy('serial_number', 'ASC')->get();
+            $data['scategorieshigh'] = Scategory::where('language_id', $lang_id)->where('feature', 1)->where('status', 1)->where('type', 1)->orderBy('serial_number', 'ASC')->get();
             if (!serviceCategory()) {
                 $data['services'] = Service::where('language_id', $lang_id)->where('feature', 1)->orderBy('serial_number', 'ASC')->get();
             }
@@ -154,15 +165,15 @@ class FrontendController extends Controller
             } else {
                 return view('front.lawyer.index1', $data);
             }
-        } elseif ($version == 'ecommerce') {
+        } elseif ($version == 'default') {
             $data['fcategories'] = Pcategory::where('status', 1)->where('language_id', $currentLang->id)->where('is_feature', 1)->get();
             $data['hcategories'] = Pcategory::where('status', 1)->where('language_id', $currentLang->id)->where('products_in_home', 1)->get();
             $data['fproducts'] = Product::where('status', 1)->where('is_feature', 1)->where('language_id', $currentLang->id)->orderBy('id', 'DESC')->limit(10)->get();
             $data['products'] = Product::where('status', 1)->where('language_id', $currentLang->id)->orderBy('id', 'DESC')->limit(10)->get();
             if ($bex->home_page_pagebuilder == 1) {
-                return view('front.ecommerce.index', $data);
+                return view('front.default.index', $data);
             } else {
-                return view('front.ecommerce.index1', $data);
+                return view('front.default.index1', $data);
             }
         } elseif ($version == 'default' || $version == 'dark') {
             if ($bex->home_page_pagebuilder == 1) {
@@ -528,6 +539,30 @@ class FrontendController extends Controller
             }
         }
 
+
+        public function package_quote()
+        {
+            if (session()->has('lang')) {
+                $currentLang = Language::where('code', session()->get('lang'))->first();
+            } else {
+                $currentLang = Language::where('is_default', 1)->first();
+            }
+            $data['currentLang'] = $currentLang;
+            $be = $currentLang->basic_extended;
+
+            $data['categories'] = Section::where('language_id', $currentLang->id)->where('active', 1)->get();
+
+            App::setLocale($currentLang->code);
+            if ($currentLang->code == 'ar') {
+                $data['cities'] = array("الرياض", "جدة", "مكة المكرمة", "المدينة المنورة", "الطائف", "الدمام", "الخبر", "تبوك", "الخرج", "بريدة", "خميس مشيط", "الهفوف", "المبرز", "حفر الباطن", "حائل", "نجران", "الجبيل", "أبها", "ينبع", "عنيزة", "عرعر", "سكاكا", "جازان", "القريات", "الظهران", "القطيف", "الباحة", "بيشة", "اخرى", "الدلم", "الدلم", "الدلم", "حوطه بني تميم", "الحريق", "الافلاج", "الخماسين", "السليل", "حريملاء", "ثادق", "رغبة", "ضرما", "المزاحمية", "مرات", "شقراء", "القصب", "ساجر", "الدوادمي", "القويعية", "عفيف", "الخاصرة", "رماح", "شوية", "المجمعة", "الزلفي", "الغاط", "الارطاويه", "سدير", "البدائع", "المذنب", "الرس", "البكيريه", "رياض الخبرا", "الأسياح", "شري", "الفوارة", "عقلة الصقور", "البطــين", "مــدرج", "الدليميــه", "البتــراء", "القـريـن", "الذيبية", "النبهانيه", "دخنة", "ام حــزم", "ضليع رشيد", "ضريه", "قبــه", "الخبرا", "السر", "ثرمداء", "حلبان", "ملهم", "القوارة", "وادي الدواسر", "الجمش", "البجادية", "الاحساء", "رحيمة", "النعيرية", "الخفجي", "السفانية", "بقيق", "الثقبة", "سيهات", "صفوى", "قريه", "رأس تنورة", "قرى الإحساء", "العقير", "سلوى", "الحنى", "حرض", "العيون", "عين دار", "القيصومة", "الرقعي", "الذيبية", "مدينة الملك خالد العسكرية", "سامودا", "ام قليب", "ابن طواله", "الصداوي", "السعيرة", "الحليقه", "بقعاء", "موقق", "ضرغط", "طابه", "الحايط", "قرى حائل", "جبه", "تربة-حائل", "الشملي", "الروضة", "الكهفة", "السليمي", "الخطة", "الشنان", "مدينة الأمير عدبالعزيز بن مساعد الاقتصادية (حائل)", "دومة الجندل", "طبرجل", "قارا", "صـــوير", "هــديـب", "الاضارع", "اللقـائـــط", "زلــــوم", "طريف", "رفحا", "حالة عمار", "الوجه", "حقل", "تيماء", "ضباء", "البدع", "شرما", "المويلح", "القحزه", "قيال", "الشرف", "مقنا", "الخريبة", "البئر", "الجهراء", "شواق", "القليبه", "البديعه", "الديسه", "المعظم", "فجر", "الروضة", "الخرمة", "تربة-الطائف", "بنى مالك", "رنيه", "المويه", "ظـــــــلم", "بحرة", "مستورة", "ذهبان", "عسفان", "ابو راكه", "بالحارث", "قياء", "ترعة ثقيف", "غزايل", "الليث", "رابغ", "القنفذة", "خليص", "الكامل", "مدركه", "الجمـوم", "الشـرائع", "مدينة الملك عبدالله الاقتصادية برابغ", "مدينة المعرفة الاقتصادية", "العلا", "المهد", "الحناكية", "الحسو", "الثمد", "العمق", "الشقران", "المليليح", "السويرقيه", "الفريش", "وادي الفرع", "خيبر", "الصلصلة", "الصويدرة", "الشقره", "ثرب", "لفه", "املج", "بدر", "الواسطة", "المسيجيد", "بلجرشي", "المندق", "بني حسن", "دوس", "القري", "المخواه", "غامد الزناد", "قلوي", "الشعـــــراء", "العقيق", "قرى الحجاز", "تثليث", "سراة عبيدة", "احد رفيدة", "ظهران الجنوب", "النماص", "محائل", "رجال ألمع", "تنومة", "بني عمرو", "المجاردة", "قناءوالبحر", "الربوعة", "القحمة", "جيزان", "ابو عريش", "الشقيري", "الريث الشقيق", "ضمد", "فيفا", "صبيا", "صامطة - الطوال", "فرسان", "الداير بني مالك", "هروب", "احد المسارحة - الخوبة", "شروره", "العبيله", "بدر الجنوب", "الوديعة", "حبونا", "يدمه", "مدينة جازان للصناعات الأساسية والتحويلية");
+            } else {
+                $data['cities'] = array("Riyadh", "Jeddah", "Mecca", "Medina", "Ta'if", "Dammam", "Khobar", "Tabuk", "Al-Kharj", "Buraydah", "Khamis Mushait", "Al-Hufuf", "Al-Mubarraz", "Hafar Al-Batin", "Ha'il", "Najran", "Jubail", "Abha", "Yanbu", "Unaizah", "Arar", "Sakakah", "Jazan", "Qurayyat", "Dhahran", "Al-Qatif", "Al-Baha", "Bishah", "Accra", "Ad-Dilam", "Hautat Bani Tamim", "Al-Hareeq", "Aflaj", "Al-khamasin", "Saleel", "Harimlaa", "Thadiq", "Ragbah", "Dharmaa", "Muzahmiyyah", "Marat", "Shaqraa", "Al-Qasab", "Sajir", "Dawadmi", "Quwaiyah", "Afeef", "Khasirah", "Remaah", "Shuwiyah", "Majma'ah", "Zulfi", "Al-Ghat", "Al-Artaweeiyah", "Sudair", "Al-Bada'a", "Al-Mithnab", "Al-Rass", "Al-Bukayriyah", "Riyadh Al-Khabra", "Al-Asyah", "Shiri", "Fawarah", "Aqlit Al-Sukour", "Al-Bateen", "Mudraj", "Dulaimiyah", "Al-Batraa", "Al-Qareen", "Thaibiyah", "Nabhaniyah", "Daknah", "Um Hazm", "Dali' Rasheed", "Diryah", "Qubbah", "Al-Khabra", "Al-Ssir", "Tharmadaa", "Halban", "Mulham", "Quwarah", "Wadi Al-Dawasir", "Al-Jamsh", "Bajadiyah", "Al-Hasa", "Rahima", "Nua'iriyah", "Al-Kafji", "Safaniyah", "Beqaiq", "Thuqbah", "Saihat", "Safwa", "Qaryah", "Ras Tanurah", "Al-Hasa Villages", "Uqair", "Salwa", "Al-Hana", "Harid", "Al-Oyoun", "Ain Dar", "Qaisumah", "Al-Raq'i", "Military city of king Khalid", "Samuda", "Um Qulaib", "Ibn Tawalah", "Sadawi", "Al-Sa'erah", "Al-Haliqah", "Buqa'a", "Moqiq", "Durghut", "Tabah", "Al-Ha'it", "Ha'il Villages", "Jibah", "Turbit Ha'il", "Al-Shamli", "Rawdah", "Al-Kahfa", "Sulaymi", "Al-Khotta", "Shinan", "Economic city of prince Abd Al-Aziz Bin musa'id (Ha'il)", "Dumat Al-Jandal", "Tabarjal", "Qarah", "Suwair", "Hudaid", "Al-Adar'i", "Al-Laqai't", "Zalloum", "Tareef", "Rafha", "Halit Ammar", "Al-Wajh", "Haqil", "Taima'a", "Diba'a", "Al-Bid'a", "Sharma", "Muwilih", "Kahza", "Qiyal", "Al-Shuruf", "Miqna", "Kuraybah", "Al-Bi'er", "Jahraa", "Shiwaq", "Qulaybah", "Badi'a", "Al-Disah", "Mu'atham", "Fajir", "Al-Khirmah", "Turbit Al-Ta'if", "Bani Malik", "Rinaih", "Al-Moyah", "Thulam", "Bahrah", "Mastourah", "Thahban", "Asfan", "Abu Rakah", "Bilharith", "Qiya'a", "Tir'it Thaqif", "Ghazail", "Al-Laith", "Rabigh", "Qunfuthah", "Khulais", "Al-Kamil", "Mudrakah", "Al-Jumum", "Al-Sharai'", "Economic city of king Abdullah (Rabigh)", "Economic city of knowledge", "Al-Ula", "Al-Mahd", "Al-Hanakiya", "Al-Hasew", "Al-Thamid", "Al-Omiq", "Shaqran", "Mulailih", "Swairqiyah", "Al-Farish", "Wadi Al-Firi'", "Khaybar", "Salsa", "Suwiydrah", "Thirib", "Laffih", "Amlaj", "Badr", "Al-Wasitah", "Musayjid", "Biljarshi", "Al-Minduq", "Bani Hassan", "Doos", "Al-Qirri", "Mikwah", "Ghamid Al-Zinad", "Qalawi", "Sha'raa", "Al-Aqeeq", "Al-Hijaz Villages", "Tathlith", "Surat Obaydah", "Ohud Rafidah", "Dhahran Al-Janoub", "Al-Nammas", "Muhai'l", "Rijal Alm'a", "Tannumah", "Bani Amro", "Al-Majardah", "Qina' Wilbahir", "Rabboa'a", "Al-Qahmah", "Jizan", "Abu Areesh", "Al-Shuqayri", "Al-Raith AL-Shaqiq", "Dumd", "Fifa", "Sibya", "Samtit Al-Tiwal", "Farasan", "Dayer Bani Malik", "Huroub", "Ohud Al-Masariha - Al-Khoba", "Shrurah", "Al-Obaylah", "Badr Al-Janoub", "Al-Wadi'a", "Hubunah", "Yedma", "Jazan city of basic and transformed industries");
+            }
+            $data['package'] = Package::find(old('package_id'));
+            $version = $be->theme_version;
+            $data['version'] = $version == 'dark' ? 'default' : $version;
+            return view('front.package_quote', $data);
+        }
 
     public function store_serv_req(Request $request)
     {
@@ -1426,6 +1461,7 @@ class FrontendController extends Controller
 </center>
 </body>
 </html>';
+
         }
         // \Illuminate\Support\Facades\Session::flash('success', 'Service added successfully!');
 
@@ -1583,6 +1619,2121 @@ class FrontendController extends Controller
         return view('front.thankyou', $data);
     }
 
+    public function store_package(Request $request)
+    {
+
+        // FIX SPAM FORMS IF THIS INPUT IS NOT EMPTY SO WILL DIE;
+        if ($request->secure) {
+            return redirect()->back()->withErrors('Your form has been submitted');
+        }
+
+        if (session()->has('lang')) {
+            $currentLang = Language::where('code', session()->get('lang'))->first();
+        } else {
+            $currentLang = Language::where('is_default', 1)->first();
+        }
+        App::setLocale($currentLang->code);
+
+
+        $rules = [
+            'mobile' => 'required',
+            'cr' => 'required',
+            'email' => 'required|email:rfc,dns',
+            'city' => 'required',
+            'desc' => 'required',
+            'suggested_time' => 'required',
+            'package_id' => 'required',
+            'emp_num' => 'required',
+            'period' => 'required',
+            'fullname' => 'required'
+        ];
+
+
+
+
+
+
+
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            $errmsgs = $validator->getMessageBag()->add('error', 'true');
+
+            return redirect()->back()->withErrors($validator->errors())->withInput();
+
+            //  return redirect()->back(($validator->errors());
+        }
+
+
+        //     dd(request()->all());
+
+        // \Illuminate\Support\Facades\Session::flash('success', 'Service added successfully!');
+
+        $data['currentLang'] = $currentLang;
+        $be = $currentLang->basic_extended;
+
+        //$data['categories'] = \App\RequestCategory::where('language_id', $currentLang->id)->where('cat_id',0)->get();
+        // dd($data);
+        //dd(request()->all());
+        $version = $be->theme_version;
+        $data['version'] = $version == 'dark' ? 'default' : $version;
+        // dd(request()->all());
+        $req = new PackageRequest();
+        $req->emp_name = $request->fullname;
+        $req->company_name = $request->company_name;
+        $req->company_cr = $request->cr;
+        $req->emp_mobile = $request->mobile;
+        $req->emp_email = $request->email;
+        $req->period = $request->period;
+        $req->company_city = $request->city;
+        $req->suitable_time = $request->suggested_time;
+        $req->description = $request->desc;
+        $req->package_id = $request->package_id;
+        $req->language_id = $currentLang->id;
+        $now = Carbon::now();
+        $code = "P-" . rand(10000, 99999);
+        $req->uuid = $code;
+        $req->save();
+
+
+
+
+        $adminMsg = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+	<!--[if (gte mso 9)|(IE)]>
+	<xml>
+		<o:OfficeDocumentSettings>
+			<o:AllowPNG/>
+			<o:PixelsPerInch>96</o:PixelsPerInch>
+		</o:OfficeDocumentSettings>
+	</xml>
+	<![endif]-->
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="width=device-width" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<title>etmam Email Template</title>
+
+	<!-- Google Fonts Link -->
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
+
+	<style type="text/css">
+
+		/*------ Client-Specific Style ------ */
+		@-ms-viewport{width:device-width;}
+		table, td{mso-table-lspace:0pt; mso-table-rspace:0pt;}
+		img{-ms-interpolation-mode:bicubic; border: 0;}
+		p, a, li, td, blockquote{mso-line-height-rule:exactly;}
+		p, a, li, td, body, table, blockquote{-ms-text-size-adjust:100%; -webkit-text-size-adjust:100%;}
+		#outlook a{padding:0;}
+		.ReadMsgBody{width:100%;} .ExternalClass{width:100%;}
+		.ExternalClass,.ExternalClass div,.ExternalClass font,.ExternalClass p,.ExternalClass span,.ExternalClass td,img{line-height:100%;}
+
+		/*------ Reset Style ------ */
+		*{-webkit-text-size-adjust:none;-webkit-text-resize:100%;text-resize:100%;}
+		table{border-spacing: 0 !important;}
+		h1, h2, h3, h4, h5, h6, p{display:block; Margin:0; padding:0;}
+		img, a img{border:0; height:auto; outline:none; text-decoration:none;}
+		#bodyTable, #bodyCell{ margin:0; padding:0; width:100%;}
+		body {height:100%; margin:0; padding:0; width:100%;}
+
+		.appleLinks a {color: #c2c2c2 !important; text-decoration: none;}
+		span.preheader { display: none !important; }
+
+		/*------ Google Font Style ------ */
+		[style*="Open Sans"],.text {font-family:"Open Sans", Helvetica, Arial, sans-serif !important;}
+		/*------ General Style ------ */
+		.wrapperWebview, .wrapperBody, .wrapperFooter{width:100%; max-width:600px; Margin:0 auto;}
+
+		/*------ Column Layout Style ------ */
+		.tableCard {text-align:center; font-size:0;}
+
+		/*------ Images Style ------ */
+		.imgHero img{ width:600px; height:auto; }
+
+	</style>
+
+	<style type="text/css">
+		/*------ Media Width 480 ------ */
+		@media screen and (max-width:640px) {
+			table[class="wrapperWebview"]{width:100% !important; }
+			table[class="wrapperEmailBody"]{width:100% !important; }
+			table[class="wrapperFooter"]{width:100% !important; }
+			td[class="imgHero"] img{ width:100% !important;}
+			.hideOnMobile {display:none !important; width:0; overflow:hidden;}
+		}
+	</style>
+
+</head>
+
+<body dir="rtl" style="background-color:#F9F9F9;">
+<center>
+
+	<table border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout:fixed;background-color:#F9F9F9;" id="bodyTable">
+		<tr>
+			<td align="center" valign="top" style="padding-right:10px;padding-left:10px;" id="bodyCell">
+				<!--[if (gte mso 9)|(IE)]><table align="center" border="0" cellspacing="0" cellpadding="0" style="width:600px;" width="300"><tr><td align="center" valign="top"><![endif]-->
+
+
+
+				<!-- Email Wrapper Header Open //-->
+				<table border="0" cellpadding="0" cellspacing="0" style="max-width:600px;    margin-top: 50px;" width="100%" class="wrapperWebview">
+					<tr>
+						<td align="center" valign="top">
+							<!-- Content Table Open // -->
+							<table border="0" cellpadding="0" cellspacing="0" width="100%">
+								<tr>
+									<td align="center" valign="middle" style="padding-top:20px;padding-bottom:20px;    background: whitesmoke;" class="emailLogo">
+										<!-- Logo and Link // -->
+										<a href="#" target="_blank" style="text-decoration:none;">
+											<img src="https://etmaam.com.sa/assets/front/img/logo.png" alt="" width="150" border="0" style="width:100%; max-width:150px;height:auto; display:block;"/>
+										</a>
+									</td>
+								</tr>
+							</table>
+							<!-- Content Table Close // -->
+						</td>
+					</tr>
+				</table>
+				<!-- Email Wrapper Header Close //-->
+
+				<!-- Email Wrapper Body Open // -->
+				<table border="0" cellpadding="0" cellspacing="0" style="max-width:600px;" width="100%" class="wrapperBody">
+					<tr>
+						<td align="center" valign="top">
+
+							<!-- Table Card Open // -->
+							<table border="0" cellpadding="0" cellspacing="0" style="background-color:#FFFFFF;border-color:#E5E5E5; border-style:solid; border-width:0 1px 1px 1px;" width="100%" class="tableCard">
+
+
+
+								<tr>
+									<td align="center" valign="top" style="padding-bottom:40px ;padding-top: 40px;" class="imgHero">
+										<!-- Hero Image // -->
+										<a href="#" target="_blank" style="text-decoration:none;">
+											<img src="https://etmaam.com.sa/assets/front/img/user-subscribe.png" width="300" alt="" border="0" style="width:100%; max-width:150px; height:auto; display:block;" />
+										</a>
+									</td>
+								</tr>
+
+								<tr>
+									<td align="center" valign="top" style="padding-bottom:5px;padding-left:20px;padding-right:20px;" class="mainTitle">
+										<!-- Main Title Text // -->
+										<h2 class="text" style="color:#000000; font-size:28px; font-weight:600; font-style:normal; letter-spacing:normal; line-height:36px; text-transform:none; text-align:center; padding:0; margin:0">
+											طلب باقة جديد #' . $req->id . ' | ' . $request->fullname . '
+										</h2>
+									</td>
+								</tr>
+
+								<tr>
+									<td align="center" valign="top" style="padding-bottom:18px;padding-left:20px;padding-right:20px;" class="subTitle">
+										<!-- Sub Title Text // -->
+										<h4 class="text" style="color:#225476; font-size:20px; margin:3px 0; font-weight:600; font-style:normal; letter-spacing:normal; line-height:26px; text-transform:none; text-align:center; padding:0; margin:5">
+											اسم المنشأة
+										</h4>
+										<h4 class="text" style="color:#666666; font-size:20px; margin:3px 0; font-weight:600; font-style:normal; letter-spacing:normal; line-height:26px; text-transform:none; text-align:center; padding:0; margin:5">
+											' . $request->company_name . '
+										</h4>
+										<h4 class="text" style="color:#225476; font-size:20px; margin:3px 0; font-weight:600; font-style:normal; letter-spacing:normal; line-height:26px; text-transform:none; text-align:center; padding:0; margin:5">
+											رقم السجل
+										</h4>
+										<h4 class="text" style="color:#666666; font-size:20px; margin:3px 0; font-weight:600; font-style:normal; letter-spacing:normal; line-height:26px; text-transform:none; text-align:center; padding:0; margin:5">
+											' . $request->cr . '
+										</h4>
+										<h4 class="text" style="color:#225476; font-size:20px; margin:3px 0; font-weight:600; font-style:normal; letter-spacing:normal; line-height:26px; text-transform:none; text-align:center; padding:0; margin:5">
+											اسم المسؤول
+										</h4>
+										<h4 class="text" style="color:#666666; font-size:20px; margin:3px 0; font-weight:600; font-style:normal; letter-spacing:normal; line-height:26px; text-transform:none; text-align:center; padding:0; margin:5">
+											' . $request->fullname . '
+										</h4>
+										<h4 class="text" style="color:#225476; font-size:20px; margin:3px 0; font-weight:600; font-style:normal; letter-spacing:normal; line-height:26px; text-transform:none; text-align:center; padding:0; margin:5">
+											رقم الجوال
+										</h4>
+										<h4 class="text" style="color:#666666; font-size:20px; margin:3px 0; font-weight:600; font-style:normal; letter-spacing:normal; line-height:26px; text-transform:none; text-align:center; padding:0; margin:5">
+											' . $request->mobile . '
+										</h4>
+										<h4 class="text" style="color:#225476; font-size:20px;margin:3px 0;  font-weight:600; font-style:normal; letter-spacing:normal; line-height:26px; text-transform:none; text-align:center; padding:0; margin:5">
+											البريد الإلكتروني
+										</h4>
+										<h4 class="text" style="color:#666666; font-size:20px;margin:3px 0;  font-weight:600; font-style:normal; letter-spacing:normal; line-height:26px; text-transform:none; text-align:center; padding:0; margin:5">
+											' . $request->email . '
+										</h4>
+										<h4 class="text" style="color:#225476; font-size:20px;margin:3px 0;  font-weight:600; font-style:normal; letter-spacing:normal; line-height:26px; text-transform:none; text-align:center; padding:0; margin:5">
+											المدينة
+										</h4>
+										<h4 class="text" style="color:#666666; font-size:20px;margin:3px 0;  font-weight:600; font-style:normal; letter-spacing:normal; line-height:26px; text-transform:none; text-align:center; padding:0; margin:5">
+											' . $request->city . '
+										</h4>
+										<h4 class="text" style="color:#225476; font-size:20px;margin:3px 0;  font-weight:600; font-style:normal; letter-spacing:normal; line-height:26px; text-transform:none; text-align:center; padding:0; margin:5">
+											الوقت المناسب للتواصل
+										</h4>
+										<h4 class="text" style="color:#666666; font-size:20px;margin:3px 0;  font-weight:600; font-style:normal; letter-spacing:normal; line-height:26px; text-transform:none; text-align:center; padding:0; margin:5">
+											  ' . $request->suggested_time . '
+										</h4>
+										<h4 class="text" style="color:#225476; font-size:20px;margin:3px 0;  font-weight:600; font-style:normal; letter-spacing:normal; line-height:26px; text-transform:none; text-align:center; padding:0; margin:5">
+										نوع الباقة
+										</h4>
+										<h4 class="text" style="color:#666666; font-size:20px;margin:3px 0;  font-weight:600; font-style:normal; letter-spacing:normal; line-height:26px; text-transform:none; text-align:center; padding:0; margin:5">
+										' . Package::find($request->package_id)->title . '
+										</h4>
+										<h4 class="text" style="color:#225476; font-size:20px;margin:3px 0;  font-weight:600; font-style:normal; letter-spacing:normal; line-height:26px; text-transform:none; text-align:center; padding:0; margin:5">
+										مدة الاشتراك
+										</h4>
+										<h4 class="text" style="color:#666666; font-size:20px;margin:3px 0;  font-weight:600; font-style:normal; letter-spacing:normal; line-height:26px; text-transform:none; text-align:center; padding:0; margin:5">
+										' . $request->period . '
+										</h4>
+										<h4 class="text" style="color:#225476; font-size:20px;margin:3px 0;  font-weight:600; font-style:normal; letter-spacing:normal; line-height:26px; text-transform:none; text-align:center; padding:0; margin:5">
+										عدد الموظفين
+										</h4>
+										<h4 class="text" style="color:#666666; font-size:20px;margin:3px 0;  font-weight:600; font-style:normal; letter-spacing:normal; line-height:26px; text-transform:none; text-align:center; padding:0; margin:5">
+										' . $request->emp_num . '
+										</h4>
+										<h4 class="text" style="color:#225476; font-size:20px;margin:3px 0;  font-weight:600; font-style:normal; letter-spacing:normal; line-height:26px; text-transform:none; text-align:center; padding:0; margin:5">
+										حماية الاجور
+										</h4>
+										<h4 class="text" style="color:#666666; font-size:20px;margin:3px 0;  font-weight:600; font-style:normal; letter-spacing:normal; line-height:26px; text-transform:none; text-align:center; padding:0; margin:5">
+										' . $request->salary_safety . '
+										</h4>
+										<h4 class="text" style="color:#225476; font-size:20px;margin:3px 0;  font-weight:600; font-style:normal; letter-spacing:normal; line-height:26px; text-transform:none; text-align:center; padding:0; margin:5">
+											 الملاحظات
+										</h4>
+
+									</td>
+								</tr>
+
+								<tr>
+									<td align="center" valign="top" style="padding-left:20px;padding-right:20px;padding-bottom:40px;" class="containtTable">
+
+										<table border="0" cellpadding="0" cellspacing="0" width="100%" class="tableDescription">
+											<tr>
+												<td align="center" valign="top" style="padding-bottom:20px;" class="description">
+													<!-- Description Text// -->
+													<p class="text" style="width:50%;color:#666666; font-size:18px; font-weight:400; font-style:normal; letter-spacing:normal; line-height:22px; text-transform:none; text-align:center; padding:0; margin:0">
+														' . $request->desc . '
+													</p>
+												</td>
+											</tr>
+										</table>
+
+
+									</td>
+								</tr>
+
+
+
+
+							</table>
+							<!-- Table Card Close// -->
+
+							<!-- Space -->
+							<table border="0" cellpadding="0" cellspacing="0" width="100%" class="space">
+								<tr>
+									<td height="30" style="font-size:1px;line-height:1px;">&nbsp;</td>
+								</tr>
+							</table>
+
+						</td>
+					</tr>
+				</table>
+				<!-- Email Wrapper Body Close // -->
+
+				<!-- Email Wrapper Footer Open // -->
+				<table border="0" cellpadding="0" cellspacing="0" style="max-width:600px;" width="100%" class="wrapperFooter">
+					<tr>
+						<td align="center" valign="top">
+							<!-- Content Table Open// -->
+							<table border="0" cellpadding="0" cellspacing="0" width="100%" class="footer">
+								<tr>
+									<td align="center" valign="top" style="padding-top:10px;padding-bottom:10px;padding-left:10px;padding-right:10px;" class="socialLinks">
+										<!-- Social Links (Facebook)// -->
+										<a href="https://www.facebook.com/etmaam2/" target="_blank" style="display:inline-block;" class="facebook">
+											<img src="https://etmaam.com.sa/assets/front/img/facebook.png" alt="" width="40" border="0" style="height:auto; width:100%; max-width:40px; margin-left:2px; margin-right:2px" />
+										</a>
+										<!-- Social Links (Twitter)// -->
+										<a href="https://twitter.com/etmaam2" target="_blank" style="display:inline-block;" class="twitter">
+											<img src="https://etmaam.com.sa/assets/front/img/twitter.png" alt="" width="40" border="0" style="height:auto; width:100%; max-width:40px; margin-left:2px; margin-right:2px" />
+										</a>
+
+										<!-- Social Links (Instagram)// -->
+										<a href="https://www.instagram.com/etmaam2/" target="_blank" style="display:inline-block;" class="instagram">
+											<img src="https://etmaam.com.sa/assets/front/img/instagram.png" alt="" width="40" border="0" style="height:auto; width:100%; max-width:40px; margin-left:2px; margin-right:2px" />
+										</a>
+										<!-- Social Links (Linkdin)// -->
+										<a href="https://www.linkedin.com/company/etmaam2" target="_blank" style="display:inline-block;" class="linkdin">
+											<img src="https://etmaam.com.sa/assets/front/img/linkdin.png" alt="" width="40" border="0" style="height:auto; width:100%; max-width:40px; margin-left:2px; margin-right:2px" />
+										</a>
+									</td>
+								</tr>
+
+								<tr>
+									<td align="center" valign="top" style="padding-top:10px;padding-bottom:5px;padding-left:10px;padding-right:10px;" class="brandInfo">
+										<!-- Brand Information // -->
+										<p class="text" style="color:#777777; font-size:12px; font-weight:400; font-style:normal; letter-spacing:normal; line-height:20px; text-transform:none; text-align:center; padding:0; margin:0;">&copy;&nbsp; اتمام للخدمات. | 2022 <span> المنطقة الوسطى - الرياض</span>
+										</p>
+									</td>
+								</tr>
+
+								<tr>
+									<td align="center" valign="top" style="padding-top:0px;padding-bottom:20px;padding-left:10px;padding-right:10px;" class="footerLinks">
+										<!-- Use Full Links (Privacy Policy)// -->
+										<p class="text" style="color:#777777; font-size:12px; font-weight:400; font-style:normal; letter-spacing:normal; line-height:20px; text-transform:none; text-align:center; padding:0; margin:0;" >
+										<a href="https://etmaam.com.sa/about" style="color:#777777;text-decoration:underline;" target="_blank"> ماذا عنا  </a>&nbsp;|&nbsp;<a href="https://etmaam.com.sa/serv_req" style="color:#777777;text-decoration:underline;" target="_blank"> اطلب خدمة </a>&nbsp;|&nbsp;<a href="https://etmaam.com.sa/" style="color:#777777;text-decoration:underline;" target="_blank"> الصفحة الرئيسية  </a>
+										</p>
+									</td>
+								</tr>
+
+								<tr>
+									<td align="center" valign="top" style="padding-top:0px;padding-bottom:10px;padding-left:10px;padding-right:10px;" class="footerEmailInfo">
+										<!-- Information of NewsLetter (Subscribe Info)// -->
+										<p class="text" style="color:#777777; font-weight:400; font-style:normal; letter-spacing:normal; line-height:20px; text-transform:none; text-align:center; padding:0; margin:0;" >
+										اذا كان لديك اي استفسار يمكنك التواصل معنا <a href="mailto:info@etmaam.com.sa" style="color:#777777;text-decoration:underline;" target="_blank">info@etmaam.com.sa</a><br>
+										</p>
+									</td>
+								</tr>
+
+
+
+								<!-- Space -->
+								<tr>
+									<td height="30" style="font-size:1px;line-height:1px;">&nbsp;</td>
+								</tr>
+							</table>
+							<!-- Content Table Close// -->
+						</td>
+					</tr>
+
+					<!-- Space -->
+					<tr>
+						<td height="30" style="font-size:1px;line-height:1px;">&nbsp;</td>
+					</tr>
+				</table>
+				<!-- Email Wrapper Footer Close // -->
+
+				<!--[if (gte mso 9)|(IE)]></td></tr></table><![endif]-->
+			</td>
+		</tr>
+	</table>
+
+</center>
+</body>
+</html>';
+
+        if ($currentLang->code == 'ar') {
+            $userMsg = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+	<!--[if (gte mso 9)|(IE)]>
+	<xml>
+		<o:OfficeDocumentSettings>
+			<o:AllowPNG/>
+			<o:PixelsPerInch>96</o:PixelsPerInch>
+		</o:OfficeDocumentSettings>
+	</xml>
+	<![endif]-->
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="width=device-width" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<title>etmam Email Template</title>
+
+	<!-- Google Fonts Link -->
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
+
+	<style type="text/css">
+
+		/*------ Client-Specific Style ------ */
+		@-ms-viewport{width:device-width;}
+		table, td{mso-table-lspace:0pt; mso-table-rspace:0pt;}
+		img{-ms-interpolation-mode:bicubic; border: 0;}
+		p, a, li, td, blockquote{mso-line-height-rule:exactly;}
+		p, a, li, td, body, table, blockquote{-ms-text-size-adjust:100%; -webkit-text-size-adjust:100%;}
+		#outlook a{padding:0;}
+		.ReadMsgBody{width:100%;} .ExternalClass{width:100%;}
+		.ExternalClass,.ExternalClass div,.ExternalClass font,.ExternalClass p,.ExternalClass span,.ExternalClass td,img{line-height:100%;}
+
+		/*------ Reset Style ------ */
+		*{-webkit-text-size-adjust:none;-webkit-text-resize:100%;text-resize:100%;}
+		table{border-spacing: 0 !important;}
+		h1, h2, h3, h4, h5, h6, p{display:block; Margin:0; padding:0;}
+		img, a img{border:0; height:auto; outline:none; text-decoration:none;}
+		#bodyTable, #bodyCell{ margin:0; padding:0; width:100%;}
+		body {height:100%; margin:0; padding:0; width:100%;}
+
+		.appleLinks a {color: #c2c2c2 !important; text-decoration: none;}
+        span.preheader { display: none !important; }
+
+		/*------ Google Font Style ------ */
+		[style*="Open Sans"],.text {font-family:"Open Sans", Helvetica, Arial, sans-serif !important;}
+		/*------ General Style ------ */
+		.wrapperWebview, .wrapperBody, .wrapperFooter{width:100%; max-width:600px; Margin:0 auto;}
+
+		/*------ Column Layout Style ------ */
+		.tableCard {text-align:center; font-size:0;}
+
+		/*------ Images Style ------ */
+		.imgHero img{ width:600px; height:auto; }
+
+	</style>
+
+	<style type="text/css">
+		/*------ Media Width 480 ------ */
+		@media screen and (max-width:640px) {
+			table[class="wrapperWebview"]{width:100% !important; }
+			table[class="wrapperEmailBody"]{width:100% !important; }
+			table[class="wrapperFooter"]{width:100% !important; }
+			td[class="imgHero"] img{ width:100% !important;}
+			.hideOnMobile {display:none !important; width:0; overflow:hidden;}
+		}
+	</style>
+
+</head>
+
+<body dir="rtl" style="background-color:#F9F9F9;">
+<center>
+
+<table border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout:fixed;background-color:#F9F9F9;" id="bodyTable">
+	<tr>
+		<td align="center" valign="top" style="padding-right:10px;padding-left:10px;" id="bodyCell">
+		<!--[if (gte mso 9)|(IE)]><table align="center" border="0" cellspacing="0" cellpadding="0" style="width:600px;" width="300"><tr><td align="center" valign="top"><![endif]-->
+
+
+
+		<!-- Email Wrapper Header Open //-->
+		<table border="0" cellpadding="0" cellspacing="0" style="max-width:600px;    margin-top: 50px;" width="100%" class="wrapperWebview">
+			<tr>
+				<td align="center" valign="top">
+					<!-- Content Table Open // -->
+					<table border="0" cellpadding="0" cellspacing="0" width="100%">
+						<tr>
+							<td align="center" valign="middle" style="padding-top:20px;padding-bottom:20px;    background: whitesmoke;" class="emailLogo">
+								<!-- Logo and Link // -->
+								<a href="#" target="_blank" style="text-decoration:none;">
+									<img src="https://etmaam.com.sa/assets/front/img/logo.png" alt="" width="150" border="0" style="width:100%; max-width:150px;height:auto; display:block;"/>
+								</a>
+							</td>
+						</tr>
+					</table>
+					<!-- Content Table Close // -->
+				</td>
+			</tr>
+		</table>
+		<!-- Email Wrapper Header Close //-->
+
+		<!-- Email Wrapper Body Open // -->
+		<table border="0" cellpadding="0" cellspacing="0" style="max-width:600px;" width="100%" class="wrapperBody">
+			<tr>
+				<td align="center" valign="top">
+
+					<!-- Table Card Open // -->
+					<table border="0" cellpadding="0" cellspacing="0" style="background-color:#FFFFFF;border-color:#E5E5E5; border-style:solid; border-width:0 1px 1px 1px;" width="100%" class="tableCard">
+
+
+
+						<tr>
+							<td align="center" valign="top" style="padding-bottom:40px ;padding-top: 40px;" class="imgHero">
+								<!-- Hero Image // -->
+								<a href="#" target="_blank" style="text-decoration:none;">
+									<img src="https://etmaam.com.sa/assets/front/img/user-subscribe.png" width="300" alt="" border="0" style="width:100%; max-width:150px; height:auto; display:block;" />
+								</a>
+							</td>
+						</tr>
+
+						<tr>
+							<td align="center" valign="top" style="padding-bottom:5px;padding-left:20px;padding-right:20px;" class="mainTitle">
+								<!-- Main Title Text // -->
+								<h2 class="text" style="color:#000000;  font-size:28px; font-weight:600; font-style:normal; letter-spacing:normal; line-height:36px; text-transform:none; text-align:center; padding:0; margin:0">
+									مرحبا<span>"' . $request->fullname . '"</span>
+								</h2>
+							</td>
+						</tr>
+
+						<tr>
+							<td align="center" valign="top" style="padding-bottom:18px;padding-left:20px;padding-right:20px;" class="subTitle">
+								<!-- Sub Title Text // -->
+								<h4 class="text" style="color:#225476;  font-size:24px; font-weight:600; font-style:normal; letter-spacing:normal; line-height:26px; text-transform:none; text-align:center; padding:0; margin:5">
+									لقد تم استقبال طلب الاشتراك في باقة بنجاح
+								</h4>
+							</td>
+						</tr>
+
+						<tr>
+							<td align="center" valign="top" style="padding-left:20px;padding-right:20px;padding-bottom:40px;" class="containtTable">
+
+								<table border="0" cellpadding="0" cellspacing="0" width="100%" class="tableDescription">
+									<tr>
+										<td align="center" valign="top" style="padding-bottom:20px;" class="description">
+											<!-- Description Text// -->
+											<p class="text" style="color:#666666;  font-size:18px; font-weight:400; font-style:normal; letter-spacing:normal; line-height:22px; text-transform:none; text-align:center; padding:0; margin:0">
+												نشكركم على طلبكم وسيتم التواصل معكم
+											</p>
+										</td>
+									</tr>
+								</table>
+
+
+							</td>
+						</tr>
+
+
+
+
+					</table>
+					<!-- Table Card Close// -->
+
+					<!-- Space -->
+					<table border="0" cellpadding="0" cellspacing="0" width="100%" class="space">
+						<tr>
+							<td height="30" style="font-size:1px;line-height:1px;">&nbsp;</td>
+						</tr>
+					</table>
+
+				</td>
+			</tr>
+		</table>
+		<!-- Email Wrapper Body Close // -->
+
+		<!-- Email Wrapper Footer Open // -->
+		<table border="0" cellpadding="0" cellspacing="0" style="max-width:600px;" width="100%" class="wrapperFooter">
+			<tr>
+				<td align="center" valign="top">
+					<!-- Content Table Open// -->
+					<table border="0" cellpadding="0" cellspacing="0" width="100%" class="footer">
+						<tr>
+							<td align="center" valign="top" style="padding-top:10px;padding-bottom:10px;padding-left:10px;padding-right:10px;" class="socialLinks">
+								<!-- Social Links (Facebook)// -->
+								<a href="https://www.facebook.com/etmaam2/" target="_blank" style="display:inline-block;" class="facebook">
+									<img src="https://etmaam.com.sa/assets/front/img/facebook.png" alt="" width="40" border="0" style="height:auto; width:100%; max-width:40px; margin-left:2px; margin-right:2px" />
+								</a>
+								<!-- Social Links (Twitter)// -->
+								<a href="https://twitter.com/etmaam2" target="_blank" style="display:inline-block;" class="twitter">
+									<img src="https://etmaam.com.sa/assets/front/img/twitter.png" alt="" width="40" border="0" style="height:auto; width:100%; max-width:40px; margin-left:2px; margin-right:2px" />
+								</a>
+
+								<!-- Social Links (Instagram)// -->
+								<a href="https://www.instagram.com/etmaam2/" target="_blank" style="display:inline-block;" class="instagram">
+									<img src="https://etmaam.com.sa/assets/front/img/instagram.png" alt="" width="40" border="0" style="height:auto; width:100%; max-width:40px; margin-left:2px; margin-right:2px" />
+								</a>
+								<!-- Social Links (Linkdin)// -->
+								<a href="https://www.linkedin.com/company/etmaam2" target="_blank" style="display:inline-block;" class="linkdin">
+									<img src="https://etmaam.com.sa/assets/front/img/linkdin.png" alt="" width="40" border="0" style="height:auto; width:100%; max-width:40px; margin-left:2px; margin-right:2px" />
+								</a>
+							</td>
+						</tr>
+
+						<tr>
+							<td align="center" valign="top" style="padding-top:10px;padding-bottom:5px;padding-left:10px;padding-right:10px;" class="brandInfo">
+								<!-- Brand Information // -->
+								<p class="text" style="color:#777777;  font-size:12px; font-weight:400; font-style:normal; letter-spacing:normal; line-height:20px; text-transform:none; text-align:center; padding:0; margin:0;">&copy;&nbsp; اتمام للخدمات. | 2022 <span> المنطقة الوسطى - الرياض</span>
+								</p>
+							</td>
+						</tr>
+
+						<tr>
+							<td align="center" valign="top" style="padding-top:0px;padding-bottom:20px;padding-left:10px;padding-right:10px;" class="footerLinks">
+								<!-- Use Full Links (Privacy Policy)// -->
+								<p class="text" style="color:#777777;  font-size:12px; font-weight:400; font-style:normal; letter-spacing:normal; line-height:20px; text-transform:none; text-align:center; padding:0; margin:0;" >
+									<a href="https://etmaam.com.sa/about" style="color:#777777;text-decoration:underline;" target="_blank"> ماذا عنا  </a>&nbsp;|&nbsp;<a href="https://etmaam.com.sa/serv_req" style="color:#777777;text-decoration:underline;" target="_blank"> اطلب خدمة </a>&nbsp;|&nbsp;<a href="https://etmaam.com.sa/" style="color:#777777;text-decoration:underline;" target="_blank"> الصفحة الرئيسية  </a>
+								</p>
+							</td>
+						</tr>
+
+						<tr>
+							<td align="center" valign="top" style="padding-top:0px;padding-bottom:10px;padding-left:10px;padding-right:10px;" class="footerEmailInfo">
+								<!-- Information of NewsLetter (Subscribe Info)// -->
+								<p class="text" style="color:#777777;  font-size:12px; font-weight:400; font-style:normal; letter-spacing:normal; line-height:20px; text-transform:none; text-align:center; padding:0; margin:0;" >
+								اذا كان لديك اي استفسار يمكنك التواصل معنا <a href="mailto:info@etmaam.com.sa" style="color:#777777;text-decoration:underline;" target="_blank">info@etmaam.com.sa</a><br>
+								</p>
+							</td>
+						</tr>
+
+
+
+						<!-- Space -->
+						<tr>
+							<td height="30" style="font-size:1px;line-height:1px;">&nbsp;</td>
+						</tr>
+					</table>
+					<!-- Content Table Close// -->
+				</td>
+			</tr>
+
+			<!-- Space -->
+			<tr>
+				<td height="30" style="font-size:1px;line-height:1px;">&nbsp;</td>
+			</tr>
+		</table>
+		<!-- Email Wrapper Footer Close // -->
+
+		<!--[if (gte mso 9)|(IE)]></td></tr></table><![endif]-->
+		</td>
+	</tr>
+
+</table>
+
+</center>
+</body>
+</html>';
+        } else {
+            $userMsg = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+	<!--[if (gte mso 9)|(IE)]>
+	<xml>
+		<o:OfficeDocumentSettings>
+			<o:AllowPNG/>
+			<o:PixelsPerInch>96</o:PixelsPerInch>
+		</o:OfficeDocumentSettings>
+	</xml>
+	<![endif]-->
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="width=device-width" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<title>etmam Email Template</title>
+
+	<!-- Google Fonts Link -->
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
+
+	<style type="text/css">
+
+		/*------ Client-Specific Style ------ */
+		@-ms-viewport{width:device-width;}
+		table, td{mso-table-lspace:0pt; mso-table-rspace:0pt;}
+		img{-ms-interpolation-mode:bicubic; border: 0;}
+		p, a, li, td, blockquote{mso-line-height-rule:exactly;}
+		p, a, li, td, body, table, blockquote{-ms-text-size-adjust:100%; -webkit-text-size-adjust:100%;}
+		#outlook a{padding:0;}
+		.ReadMsgBody{width:100%;} .ExternalClass{width:100%;}
+		.ExternalClass,.ExternalClass div,.ExternalClass font,.ExternalClass p,.ExternalClass span,.ExternalClass td,img{line-height:100%;}
+
+		/*------ Reset Style ------ */
+		*{-webkit-text-size-adjust:none;-webkit-text-resize:100%;text-resize:100%;}
+		table{border-spacing: 0 !important;}
+		h1, h2, h3, h4, h5, h6, p{display:block; Margin:0; padding:0;}
+		img, a img{border:0; height:auto; outline:none; text-decoration:none;}
+		#bodyTable, #bodyCell{ margin:0; padding:0; width:100%;}
+		body {height:100%; margin:0; padding:0; width:100%;}
+
+		.appleLinks a {color: #c2c2c2 !important; text-decoration: none;}
+        span.preheader { display: none !important; }
+
+		/*------ Google Font Style ------ */
+		[style*="Open Sans"],.text {font-family:"Open Sans", Helvetica, Arial, sans-serif !important;}
+		/*------ General Style ------ */
+		.wrapperWebview, .wrapperBody, .wrapperFooter{width:100%; max-width:600px; Margin:0 auto;}
+
+		/*------ Column Layout Style ------ */
+		.tableCard {text-align:center; font-size:0;}
+
+		/*------ Images Style ------ */
+		.imgHero img{ width:600px; height:auto; }
+
+	</style>
+
+	<style type="text/css">
+		/*------ Media Width 480 ------ */
+		@media screen and (max-width:640px) {
+			table[class="wrapperWebview"]{width:100% !important; }
+			table[class="wrapperEmailBody"]{width:100% !important; }
+			table[class="wrapperFooter"]{width:100% !important; }
+			td[class="imgHero"] img{ width:100% !important;}
+			.hideOnMobile {display:none !important; width:0; overflow:hidden;}
+		}
+	</style>
+
+</head>
+
+<body dir="ltr" style="background-color:#F9F9F9;">
+<center>
+
+<table border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout:fixed;background-color:#F9F9F9;" id="bodyTable">
+	<tr>
+		<td align="center" valign="top" style="padding-right:10px;padding-left:10px;" id="bodyCell">
+		<!--[if (gte mso 9)|(IE)]><table align="center" border="0" cellspacing="0" cellpadding="0" style="width:600px;" width="300"><tr><td align="center" valign="top"><![endif]-->
+
+
+
+		<!-- Email Wrapper Header Open //-->
+		<table border="0" cellpadding="0" cellspacing="0" style="max-width:600px;    margin-top: 50px;" width="100%" class="wrapperWebview">
+			<tr>
+				<td align="center" valign="top">
+					<!-- Content Table Open // -->
+					<table border="0" cellpadding="0" cellspacing="0" width="100%">
+						<tr>
+							<td align="center" valign="middle" style="padding-top:20px;padding-bottom:20px;    background: whitesmoke;" class="emailLogo">
+								<!-- Logo and Link // -->
+								<a href="#" target="_blank" style="text-decoration:none;">
+									<img src="https://etmaam.com.sa/assets/front/img/logo.png" alt="" width="150" border="0" style="width:100%; max-width:150px;height:auto; display:block;"/>
+								</a>
+							</td>
+						</tr>
+					</table>
+					<!-- Content Table Close // -->
+				</td>
+			</tr>
+		</table>
+		<!-- Email Wrapper Header Close //-->
+
+		<!-- Email Wrapper Body Open // -->
+		<table border="0" cellpadding="0" cellspacing="0" style="max-width:600px;" width="100%" class="wrapperBody">
+			<tr>
+				<td align="center" valign="top">
+
+					<!-- Table Card Open // -->
+					<table border="0" cellpadding="0" cellspacing="0" style="background-color:#FFFFFF;border-color:#E5E5E5; border-style:solid; border-width:0 1px 1px 1px;" width="100%" class="tableCard">
+
+
+
+						<tr>
+							<td align="center" valign="top" style="padding-bottom:40px ;padding-top: 40px;" class="imgHero">
+								<!-- Hero Image // -->
+								<a href="#" target="_blank" style="text-decoration:none;">
+									<img src="https://etmaam.com.sa/assets/front/img/user-subscribe.png" width="300" alt="" border="0" style="width:100%; max-width:150px; height:auto; display:block;" />
+								</a>
+							</td>
+						</tr>
+
+						<tr>
+							<td align="center" valign="top" style="padding-bottom:5px;padding-left:20px;padding-right:20px;" class="mainTitle">
+								<!-- Main Title Text // -->
+								<h2 class="text" style="color:#000000;  font-size:28px; font-weight:600; font-style:normal; letter-spacing:normal; line-height:36px; text-transform:none; text-align:center; padding:0; margin:0">
+									Dear <span>"' . $request->fullname . '"</span>
+								</h2>
+							</td>
+						</tr>
+
+						<tr>
+							<td align="center" valign="top" style="padding-bottom:18px;padding-left:20px;padding-right:20px;" class="subTitle">
+								<!-- Sub Title Text // -->
+								<h4 class="text" style="color:#225476;  font-size:24px; font-weight:600; font-style:normal; letter-spacing:normal; line-height:26px; text-transform:none; text-align:center; padding:0; margin:5">
+									Your package request has been received successfully.
+								</h4>
+							</td>
+						</tr>
+
+						<tr>
+							<td align="center" valign="top" style="padding-left:20px;padding-right:20px;padding-bottom:40px;" class="containtTable">
+
+								<table border="0" cellpadding="0" cellspacing="0" width="100%" class="tableDescription">
+									<tr>
+										<td align="center" valign="top" style="padding-bottom:20px;" class="description">
+											<!-- Description Text// -->
+											<p class="text" style="color:#666666;  font-size:18px; font-weight:400; font-style:normal; letter-spacing:normal; line-height:22px; text-transform:none; text-align:center; padding:0; margin:0">
+												Thank you for your trust, our support will reach you shortly.
+											</p>
+										</td>
+									</tr>
+								</table>
+
+
+							</td>
+						</tr>
+
+
+
+
+					</table>
+					<!-- Table Card Close// -->
+
+					<!-- Space -->
+					<table border="0" cellpadding="0" cellspacing="0" width="100%" class="space">
+						<tr>
+							<td height="30" style="font-size:1px;line-height:1px;">&nbsp;</td>
+						</tr>
+					</table>
+
+				</td>
+			</tr>
+		</table>
+		<!-- Email Wrapper Body Close // -->
+
+		<!-- Email Wrapper Footer Open // -->
+		<table border="0" cellpadding="0" cellspacing="0" style="max-width:600px;" width="100%" class="wrapperFooter">
+			<tr>
+				<td align="center" valign="top">
+					<!-- Content Table Open// -->
+					<table border="0" cellpadding="0" cellspacing="0" width="100%" class="footer">
+						<tr>
+							<td align="center" valign="top" style="padding-top:10px;padding-bottom:10px;padding-left:10px;padding-right:10px;" class="socialLinks">
+								<!-- Social Links (Facebook)// -->
+								<a href="https://www.facebook.com/etmaam2/" target="_blank" style="display:inline-block;" class="facebook">
+									<img src="https://etmaam.com.sa/assets/front/img/facebook.png" alt="" width="40" border="0" style="height:auto; width:100%; max-width:40px; margin-left:2px; margin-right:2px" />
+								</a>
+								<!-- Social Links (Twitter)// -->
+								<a href="https://twitter.com/etmaam2" target="_blank" style="display:inline-block;" class="twitter">
+									<img src="https://etmaam.com.sa/assets/front/img/twitter.png" alt="" width="40" border="0" style="height:auto; width:100%; max-width:40px; margin-left:2px; margin-right:2px" />
+								</a>
+
+								<!-- Social Links (Instagram)// -->
+								<a href="https://www.instagram.com/etmaam2/" target="_blank" style="display:inline-block;" class="instagram">
+									<img src="https://etmaam.com.sa/assets/front/img/instagram.png" alt="" width="40" border="0" style="height:auto; width:100%; max-width:40px; margin-left:2px; margin-right:2px" />
+								</a>
+								<!-- Social Links (Linkdin)// -->
+								<a href="https://www.linkedin.com/company/etmaam2" target="_blank" style="display:inline-block;" class="linkdin">
+									<img src="https://etmaam.com.sa/assets/front/img/linkdin.png" alt="" width="40" border="0" style="height:auto; width:100%; max-width:40px; margin-left:2px; margin-right:2px" />
+								</a>
+							</td>
+						</tr>
+
+						<tr>
+							<td align="center" valign="top" style="padding-top:10px;padding-bottom:5px;padding-left:10px;padding-right:10px;" class="brandInfo">
+								<!-- Brand Information // -->
+								<p class="text" style="color:#777777;  font-size:12px; font-weight:400; font-style:normal; letter-spacing:normal; line-height:20px; text-transform:none; text-align:center; padding:0; margin:0;">&copy;&nbsp; Etmaam for Services | 2022 <span> Riyadh </span>
+								</p>
+							</td>
+						</tr>
+
+						<tr>
+							<td align="center" valign="top" style="padding-top:0px;padding-bottom:20px;padding-left:10px;padding-right:10px;" class="footerLinks">
+								<!-- Use Full Links (Privacy Policy)// -->
+								<p class="text" style="color:#777777;  font-size:12px; font-weight:400; font-style:normal; letter-spacing:normal; line-height:20px; text-transform:none; text-align:center; padding:0; margin:0;" >
+									<a href="https://etmaam.com.sa/about" style="color:#777777;text-decoration:underline;" target="_blank"> About us  </a>&nbsp;|&nbsp;<a href="https://etmaam.com.sa/serv_req" style="color:#777777;text-decoration:underline;" target="_blank"> Request Service </a>&nbsp;|&nbsp;<a href="https://etmaam.com.sa/" style="color:#777777;text-decoration:underline;" target="_blank"> Home  </a>
+								</p>
+							</td>
+						</tr>
+
+						<tr>
+							<td align="center" valign="top" style="padding-top:0px;padding-bottom:10px;padding-left:10px;padding-right:10px;" class="footerEmailInfo">
+								<!-- Information of NewsLetter (Subscribe Info)// -->
+								<p class="text" style="color:#777777;  font-size:12px; font-weight:400; font-style:normal; letter-spacing:normal; line-height:20px; text-transform:none; text-align:center; padding:0; margin:0;" >
+								For any inquiries, please email us at <a href="mailto:info@etmaam.com.sa" style="color:#777777;text-decoration:underline;" target="_blank">info@etmaam.com.sa</a><br>
+								</p>
+							</td>
+						</tr>
+
+
+
+						<!-- Space -->
+						<tr>
+							<td height="30" style="font-size:1px;line-height:1px;">&nbsp;</td>
+						</tr>
+					</table>
+					<!-- Content Table Close// -->
+				</td>
+			</tr>
+
+			<!-- Space -->
+			<tr>
+				<td height="30" style="font-size:1px;line-height:1px;">&nbsp;</td>
+			</tr>
+		</table>
+		<!-- Email Wrapper Footer Close // -->
+
+		<!--[if (gte mso 9)|(IE)]></td></tr></table><![endif]-->
+		</td>
+	</tr>
+
+</table>
+
+</center>
+</body>
+</html>';
+        }
+
+        $be = BasicExtended::first();
+
+
+        $mail = new PHPMailer(true);
+
+        if ($be->is_smtp == 1) {
+            try {
+                //Server settings
+                // $mail->SMTPDebug = SMTP::DEBUG_SERVER;                      // Enable verbose debug output
+                //                $mail->isSMTP();                                            // Send using SMTP
+                $mail->Host       = $be->smtp_host;                    // Set the SMTP server to send through
+                $mail->SMTPAuth   = true;                                   // Enable SMTP authentication
+                $mail->Username   = $be->smtp_username;                     // SMTP username
+                $mail->Password   = $be->smtp_password;                               // SMTP password
+                $mail->SMTPSecure = $be->encryption;         // Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
+                $mail->Port       = $be->smtp_port;                                    // TCP port to connect to, use 465 for `PHPMailer::ENCRYPTION_SMTPS` above
+
+                //Recipients
+                $mail->setFrom($be->from_mail, $be->from_name);
+
+
+                $mail->addAddress($request->email);     // Add a recipient
+                //    $mail->addAddress('bashar@etmaam.com.sa');     // Add a recipient
+
+            } catch (Exception $e) {
+                // die($e->getMessage());
+            }
+        } else {
+            try {
+
+                //Recipients
+                $mail->setFrom($be->from_mail, $be->from_name);
+
+                $mail->addAddress($request->email);     // Add a recipient
+                //      $mail->addAddress('bashar@etmaam.com.sa');
+            } catch (Exception $e) {
+                // die($e->getMessage());
+            }
+        }
+
+        // Content
+        //  $mail->AltBody = 'برنامه شما از این ایمیل پشتیبانی نمی کند، برای دیدن آن، لطفا از برنامه دیگری استفاده نمائید'; // متنی برای کاربرانی که نمی توانند ایمیل را به درستی مشاهده کنند
+        $mail->CharSet = 'UTF-8';
+        $mail->ContentType = 'text/html';
+        $mail->isHTML(true);                                  // Set email format to HTML
+        if ($currentLang->code == 'ar') {
+            $mail->Subject = 'تم استقبال طلب الاشتراك في باقة..وسيتم التواصل معكم';
+        } else {
+            $mail->Subject = 'Your package request has been submitted';
+        }
+
+        $mail->Body    = $userMsg;
+
+        $mail->send();
+        $mail->clearAllRecipients();
+
+        if ($be->is_smtp == 1) {
+            try {
+                //Server settings
+                // $mail->SMTPDebug = SMTP::DEBUG_SERVER;                      // Enable verbose debug output
+                //                $mail->isSMTP();                                            // Send using SMTP
+                $mail->Host       = $be->smtp_host;                    // Set the SMTP server to send through
+                $mail->SMTPAuth   = true;                                   // Enable SMTP authentication
+                $mail->Username   = $be->smtp_username;                     // SMTP username
+                $mail->Password   = $be->smtp_password;                               // SMTP password
+                $mail->SMTPSecure = $be->encryption;         // Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
+                $mail->Port       = $be->smtp_port;                                    // TCP port to connect to, use 465 for `PHPMailer::ENCRYPTION_SMTPS` above
+
+                //Recipients
+                $mail->setFrom($be->from_mail, $be->from_name);
+
+                // Add a recipient
+                $mail->addAddress('adham@etmaam.com.sa');     // Add a recipient
+                $mail->addAddress('ahmed.j@etmaam.com.sa');     // Add a recipient
+
+                $mail->addAddress('customer_service@etmaam.com.sa');     // Add a recipient
+                $mail->addAddress('abdullah.o@etmaam.com.sa');     // Add a recipient
+
+                $mail->addAddress('hedbah@etmaam.com.sa');     // Add a recipient
+                $mail->addAddress('sidra@etmaam.com.sa');
+                $mail->addAddress('mohammed.h@etmaam.com.sa');
+
+                $mail->addAddress('najat@etmaam.com.sa');
+                // Add a recipient
+                // Add a recipient
+                $mail->addAddress('modhaf@etmaam.com.sa');     // Add a recipient
+                // it emails
+                $mail->addAddress('work@mohdabdulbari.com');     // Add a recipient
+                $mail->addAddress('design@etmaam.com.sa');     // Add a recipient
+
+            } catch (Exception $e) {
+                // die($e->getMessage());
+            }
+        } else {
+            try {
+
+                //Recipients
+                $mail->setFrom($be->from_mail, $be->from_name);
+
+                // Add a recipient
+                $mail->addAddress('adham@etmaam.com.sa');     // Add a recipient
+                $mail->addAddress('ahmed.j@etmaam.com.sa');     // Add a recipient
+
+                $mail->addAddress('customer_service@etmaam.com.sa');     // Add a recipient
+                $mail->addAddress('abdullah.o@etmaam.com.sa');     // Add a recipient
+
+                $mail->addAddress('hedbah@etmaam.com.sa');     // Add a recipient
+                $mail->addAddress('sidra@etmaam.com.sa');
+                $mail->addAddress('mohammed.h@etmaam.com.sa');
+
+                $mail->addAddress('najat@etmaam.com.sa');
+                // Add a recipient
+                $mail->addAddress('modhaf@etmaam.com.sa');     // Add a recipient
+                // it emails
+                $mail->addAddress('work@mohdabdulbari.com');     // Add a recipient
+                $mail->addAddress('design@etmaam.com.sa');     // Add a recipient
+            } catch (Exception $e) {
+                // die($e->getMessage());
+            }
+        }
+        //   Mail::to($req->emp_email)->send(new App\Mail\NewServiceRequest($req));
+        $mail->CharSet = 'UTF-8';
+        $mail->ContentType = 'text/html';
+        $mail->isHTML(true);                                  // Set email format to HTML
+        $mail->Subject = 'طلب باقة جديد #' . $req->id . ' | ' . $request->company_name;
+        $mail->Body    = $adminMsg;
+
+        $mail->send();
+        //   Mail::to($req->emp_email)->send(new App\Mail\NewServiceRequest($req));
+
+        if ($currentLang->code == 'ar') {
+            $data['msg_title'] = 'تم ارسال طلبك بنجاح';
+            $data['msg'] = " نشكركم على طلبكم وسيتم التواصل معكم من قبل أحد المختصين في
+                        مجال الباقة المطلوبة ";
+        } else {
+            $data['msg_title'] = 'Your request has been submitted Successfully';
+            $data['msg'] = "Thank you for your request, We will get back to you";
+        }
+        return view('front.thanks', $data);
+    }
+
+    public function joinus()
+    {
+        if (session()->has('lang')) {
+            $currentLang = Language::where('code', session()->get('lang'))->first();
+        } else {
+            $currentLang = Language::where('is_default', 1)->first();
+        }
+        $data['currentLang'] = $currentLang;
+        $be = $currentLang->basic_extended;
+        if ($currentLang->code == 'ar') {
+            $data['cities'] = array("الرياض", "جدة", "مكة المكرمة", "المدينة المنورة", "الطائف", "الدمام", "الخبر", "تبوك", "الخرج", "بريدة", "خميس مشيط", "الهفوف", "المبرز", "حفر الباطن", "حائل", "نجران", "الجبيل", "أبها", "ينبع", "عنيزة", "عرعر", "سكاكا", "جازان", "القريات", "الظهران", "القطيف", "الباحة", "بيشة", "اخرى", "الدلم", "الدلم", "الدلم", "حوطه بني تميم", "الحريق", "الافلاج", "الخماسين", "السليل", "حريملاء", "ثادق", "رغبة", "ضرما", "المزاحمية", "مرات", "شقراء", "القصب", "ساجر", "الدوادمي", "القويعية", "عفيف", "الخاصرة", "رماح", "شوية", "المجمعة", "الزلفي", "الغاط", "الارطاويه", "سدير", "البدائع", "المذنب", "الرس", "البكيريه", "رياض الخبرا", "الأسياح", "شري", "الفوارة", "عقلة الصقور", "البطــين", "مــدرج", "الدليميــه", "البتــراء", "القـريـن", "الذيبية", "النبهانيه", "دخنة", "ام حــزم", "ضليع رشيد", "ضريه", "قبــه", "الخبرا", "السر", "ثرمداء", "حلبان", "ملهم", "القوارة", "وادي الدواسر", "الجمش", "البجادية", "الاحساء", "رحيمة", "النعيرية", "الخفجي", "السفانية", "بقيق", "الثقبة", "سيهات", "صفوى", "قريه", "رأس تنورة", "قرى الإحساء", "العقير", "سلوى", "الحنى", "حرض", "العيون", "عين دار", "القيصومة", "الرقعي", "الذيبية", "مدينة الملك خالد العسكرية", "سامودا", "ام قليب", "ابن طواله", "الصداوي", "السعيرة", "الحليقه", "بقعاء", "موقق", "ضرغط", "طابه", "الحايط", "قرى حائل", "جبه", "تربة-حائل", "الشملي", "الروضة", "الكهفة", "السليمي", "الخطة", "الشنان", "مدينة الأمير عدبالعزيز بن مساعد الاقتصادية (حائل)", "دومة الجندل", "طبرجل", "قارا", "صـــوير", "هــديـب", "الاضارع", "اللقـائـــط", "زلــــوم", "طريف", "رفحا", "حالة عمار", "الوجه", "حقل", "تيماء", "ضباء", "البدع", "شرما", "المويلح", "القحزه", "قيال", "الشرف", "مقنا", "الخريبة", "البئر", "الجهراء", "شواق", "القليبه", "البديعه", "الديسه", "المعظم", "فجر", "الروضة", "الخرمة", "تربة-الطائف", "بنى مالك", "رنيه", "المويه", "ظـــــــلم", "بحرة", "مستورة", "ذهبان", "عسفان", "ابو راكه", "بالحارث", "قياء", "ترعة ثقيف", "غزايل", "الليث", "رابغ", "القنفذة", "خليص", "الكامل", "مدركه", "الجمـوم", "الشـرائع", "مدينة الملك عبدالله الاقتصادية برابغ", "مدينة المعرفة الاقتصادية", "العلا", "المهد", "الحناكية", "الحسو", "الثمد", "العمق", "الشقران", "المليليح", "السويرقيه", "الفريش", "وادي الفرع", "خيبر", "الصلصلة", "الصويدرة", "الشقره", "ثرب", "لفه", "املج", "بدر", "الواسطة", "المسيجيد", "بلجرشي", "المندق", "بني حسن", "دوس", "القري", "المخواه", "غامد الزناد", "قلوي", "الشعـــــراء", "العقيق", "قرى الحجاز", "تثليث", "سراة عبيدة", "احد رفيدة", "ظهران الجنوب", "النماص", "محائل", "رجال ألمع", "تنومة", "بني عمرو", "المجاردة", "قناءوالبحر", "الربوعة", "القحمة", "جيزان", "ابو عريش", "الشقيري", "الريث الشقيق", "ضمد", "فيفا", "صبيا", "صامطة - الطوال", "فرسان", "الداير بني مالك", "هروب", "احد المسارحة - الخوبة", "شروره", "العبيله", "بدر الجنوب", "الوديعة", "حبونا", "يدمه", "مدينة جازان للصناعات الأساسية والتحويلية");
+            $data['partners'] = array("مزود خدمة", "مستشار أعمال", "مستشار قانوني", "اخصائي خدمة عملاء", "محاسب", "مكتب خدمات إلكترونية", "مكتب محاسب قانوني", "مكتب زكاة وضريبة دخل", "شريك استراتيجي", "الإمتياز التجاري");
+            array_multisort(array_map('strlen', $data['partners']), $data['partners']);
+        } else {
+            $data['cities'] = array("Riyadh", "Jeddah", "Mecca", "Medina", "Ta'if", "Dammam", "Khobar", "Tabuk", "Al-Kharj", "Buraydah", "Khamis Mushait", "Al-Hufuf", "Al-Mubarraz", "Hafar Al-Batin", "Ha'il", "Najran", "Jubail", "Abha", "Yanbu", "Unaizah", "Arar", "Sakakah", "Jazan", "Qurayyat", "Dhahran", "Al-Qatif", "Al-Baha", "Bishah", "Accra", "Ad-Dilam", "Hautat Bani Tamim", "Al-Hareeq", "Aflaj", "Al-khamasin", "Saleel", "Harimlaa", "Thadiq", "Ragbah", "Dharmaa", "Muzahmiyyah", "Marat", "Shaqraa", "Al-Qasab", "Sajir", "Dawadmi", "Quwaiyah", "Afeef", "Khasirah", "Remaah", "Shuwiyah", "Majma'ah", "Zulfi", "Al-Ghat", "Al-Artaweeiyah", "Sudair", "Al-Bada'a", "Al-Mithnab", "Al-Rass", "Al-Bukayriyah", "Riyadh Al-Khabra", "Al-Asyah", "Shiri", "Fawarah", "Aqlit Al-Sukour", "Al-Bateen", "Mudraj", "Dulaimiyah", "Al-Batraa", "Al-Qareen", "Thaibiyah", "Nabhaniyah", "Daknah", "Um Hazm", "Dali' Rasheed", "Diryah", "Qubbah", "Al-Khabra", "Al-Ssir", "Tharmadaa", "Halban", "Mulham", "Quwarah", "Wadi Al-Dawasir", "Al-Jamsh", "Bajadiyah", "Al-Hasa", "Rahima", "Nua'iriyah", "Al-Kafji", "Safaniyah", "Beqaiq", "Thuqbah", "Saihat", "Safwa", "Qaryah", "Ras Tanurah", "Al-Hasa Villages", "Uqair", "Salwa", "Al-Hana", "Harid", "Al-Oyoun", "Ain Dar", "Qaisumah", "Al-Raq'i", "Military city of king Khalid", "Samuda", "Um Qulaib", "Ibn Tawalah", "Sadawi", "Al-Sa'erah", "Al-Haliqah", "Buqa'a", "Moqiq", "Durghut", "Tabah", "Al-Ha'it", "Ha'il Villages", "Jibah", "Turbit Ha'il", "Al-Shamli", "Rawdah", "Al-Kahfa", "Sulaymi", "Al-Khotta", "Shinan", "Economic city of prince Abd Al-Aziz Bin musa'id (Ha'il)", "Dumat Al-Jandal", "Tabarjal", "Qarah", "Suwair", "Hudaid", "Al-Adar'i", "Al-Laqai't", "Zalloum", "Tareef", "Rafha", "Halit Ammar", "Al-Wajh", "Haqil", "Taima'a", "Diba'a", "Al-Bid'a", "Sharma", "Muwilih", "Kahza", "Qiyal", "Al-Shuruf", "Miqna", "Kuraybah", "Al-Bi'er", "Jahraa", "Shiwaq", "Qulaybah", "Badi'a", "Al-Disah", "Mu'atham", "Fajir", "Al-Khirmah", "Turbit Al-Ta'if", "Bani Malik", "Rinaih", "Al-Moyah", "Thulam", "Bahrah", "Mastourah", "Thahban", "Asfan", "Abu Rakah", "Bilharith", "Qiya'a", "Tir'it Thaqif", "Ghazail", "Al-Laith", "Rabigh", "Qunfuthah", "Khulais", "Al-Kamil", "Mudrakah", "Al-Jumum", "Al-Sharai'", "Economic city of king Abdullah (Rabigh)", "Economic city of knowledge", "Al-Ula", "Al-Mahd", "Al-Hanakiya", "Al-Hasew", "Al-Thamid", "Al-Omiq", "Shaqran", "Mulailih", "Swairqiyah", "Al-Farish", "Wadi Al-Firi'", "Khaybar", "Salsa", "Suwiydrah", "Thirib", "Laffih", "Amlaj", "Badr", "Al-Wasitah", "Musayjid", "Biljarshi", "Al-Minduq", "Bani Hassan", "Doos", "Al-Qirri", "Mikwah", "Ghamid Al-Zinad", "Qalawi", "Sha'raa", "Al-Aqeeq", "Al-Hijaz Villages", "Tathlith", "Surat Obaydah", "Ohud Rafidah", "Dhahran Al-Janoub", "Al-Nammas", "Muhai'l", "Rijal Alm'a", "Tannumah", "Bani Amro", "Al-Majardah", "Qina' Wilbahir", "Rabboa'a", "Al-Qahmah", "Jizan", "Abu Areesh", "Al-Shuqayri", "Al-Raith AL-Shaqiq", "Dumd", "Fifa", "Sibya", "Samtit Al-Tiwal", "Farasan", "Dayer Bani Malik", "Huroub", "Ohud Al-Masariha - Al-Khoba", "Shrurah", "Al-Obaylah", "Badr Al-Janoub", "Al-Wadi'a", "Hubunah", "Yedma", "Jazan city of basic and transformed industries");
+            $data['partners'] = array("Service Provider", "Business Consultant", "Counsel", "Customer Service Specialist", "Accountant", "eServices office", "Chartered accountant office", "Zakat and Income tax office", "Strategic Partner", "Franchise");
+            array_multisort(array_map('strlen', $data['partners']), $data['partners']);
+        }
+        $data['categories'] = \App\RequestCategory::where('language_id', $currentLang->id)->where('cat_id', 0)->get();
+        // dd($data);
+        App::setLocale($currentLang->code);
+
+        $version = $be->theme_version;
+        $data['version'] = $version == 'dark' ? 'default' : $version;
+        return view('front.joinus', $data);
+    }
+
+
+    public function store_joinus(Request $request)
+    {
+
+        // FIX SPAM FORMS IF THIS INPUT IS NOT EMPTY SO WILL DIE;
+        if ($request->secure) {
+            return redirect()->back()->withErrors('Your form has been submitted');
+        }
+
+        if (session()->has('lang')) {
+            $currentLang = Language::where('code', session()->get('lang'))->first();
+        } else {
+            $currentLang = Language::where('is_default', 1)->first();
+        }
+        App::setLocale($currentLang->code);
+
+
+        $rules = [
+            'mobile' => 'required',
+            'email' => 'required|email:rfc,dns',
+            'city' => 'required',
+            'notes' => 'required|max:1000',
+            'suggested_time' => 'required',
+            'partner_type' => 'required',
+            'docs.*' => 'mimes:jpg,bmp,png,pdf,doc,docs,ppt,ppt,pptx,xlsx,xls,csv,jpeg',
+            'fullname' => 'required'
+        ];
+
+
+
+
+
+
+
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            $errmsgs = $validator->getMessageBag()->add('error', 'true');
+            // dd($validator->errors());
+            return redirect()->back()->withErrors($validator->errors())->withInput();
+
+            //  return redirect()->back(($validator->errors());
+        }
+
+
+
+
+
+        // \Illuminate\Support\Facades\Session::flash('success', 'Service added successfully!');
+
+        $data['currentLang'] = $currentLang;
+        $be = $currentLang->basic_extended;
+
+        //$data['categories'] = \App\RequestCategory::where('language_id', $currentLang->id)->where('cat_id',0)->get();
+        // dd($data);
+        //dd(request()->all());
+        $version = $be->theme_version;
+        $data['version'] = $version == 'dark' ? 'default' : $version;
+        // dd(request()->all());
+        $req = new \App\Partnership;
+        $req->emp_name = $request->fullname;
+        $req->company_name = $request->company_name;
+        $req->cr = $request->cr;
+        $req->emp_mobile = $request->mobile;
+        $req->emp_email = $request->email;
+        $req->company_type = $request->partner_type;
+        $req->company_city = $request->city;
+        $req->suitable_time = $request->suggested_time;
+        $req->notes = $request->notes;
+        $req->language_id = $currentLang->id;
+        $now = Carbon::now();
+        $code = "F-" . rand(10000, 99999);
+        $req->uuid = $code;
+        $req->save();
+
+
+        $adminMsg = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+	<!--[if (gte mso 9)|(IE)]>
+	<xml>
+		<o:OfficeDocumentSettings>
+			<o:AllowPNG/>
+			<o:PixelsPerInch>96</o:PixelsPerInch>
+		</o:OfficeDocumentSettings>
+	</xml>
+	<![endif]-->
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="width=device-width" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<title>etmam Email Template</title>
+
+	<!-- Google Fonts Link -->
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
+
+	<style type="text/css">
+
+		/*------ Client-Specific Style ------ */
+		@-ms-viewport{width:device-width;}
+		table, td{mso-table-lspace:0pt; mso-table-rspace:0pt;}
+		img{-ms-interpolation-mode:bicubic; border: 0;}
+		p, a, li, td, blockquote{mso-line-height-rule:exactly;}
+		p, a, li, td, body, table, blockquote{-ms-text-size-adjust:100%; -webkit-text-size-adjust:100%;}
+		#outlook a{padding:0;}
+		.ReadMsgBody{width:100%;} .ExternalClass{width:100%;}
+		.ExternalClass,.ExternalClass div,.ExternalClass font,.ExternalClass p,.ExternalClass span,.ExternalClass td,img{line-height:100%;}
+
+		/*------ Reset Style ------ */
+		*{-webkit-text-size-adjust:none;-webkit-text-resize:100%;text-resize:100%;}
+		table{border-spacing: 0 !important;}
+		h1, h2, h3, h4, h5, h6, p{display:block; Margin:0; padding:0;}
+		img, a img{border:0; height:auto; outline:none; text-decoration:none;}
+		#bodyTable, #bodyCell{ margin:0; padding:0; width:100%;}
+		body {height:100%; margin:0; padding:0; width:100%;}
+
+		.appleLinks a {color: #c2c2c2 !important; text-decoration: none;}
+		span.preheader { display: none !important; }
+
+		/*------ Google Font Style ------ */
+		[style*="Open Sans"],.text {font-family:"Open Sans", Helvetica, Arial, sans-serif !important;}
+		/*------ General Style ------ */
+		.wrapperWebview, .wrapperBody, .wrapperFooter{width:100%; max-width:600px; Margin:0 auto;}
+
+		/*------ Column Layout Style ------ */
+		.tableCard {text-align:center; font-size:0;}
+
+		/*------ Images Style ------ */
+		.imgHero img{ width:600px; height:auto; }
+
+	</style>
+
+	<style type="text/css">
+		/*------ Media Width 480 ------ */
+		@media screen and (max-width:640px) {
+			table[class="wrapperWebview"]{width:100% !important; }
+			table[class="wrapperEmailBody"]{width:100% !important; }
+			table[class="wrapperFooter"]{width:100% !important; }
+			td[class="imgHero"] img{ width:100% !important;}
+			.hideOnMobile {display:none !important; width:0; overflow:hidden;}
+		}
+	</style>
+
+</head>
+
+<body dir="rtl" style="background-color:#F9F9F9;">
+<center>
+
+	<table border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout:fixed;background-color:#F9F9F9;" id="bodyTable">
+		<tr>
+			<td align="center" valign="top" style="padding-right:10px;padding-left:10px;" id="bodyCell">
+				<!--[if (gte mso 9)|(IE)]><table align="center" border="0" cellspacing="0" cellpadding="0" style="width:600px;" width="300"><tr><td align="center" valign="top"><![endif]-->
+
+
+
+				<!-- Email Wrapper Header Open //-->
+				<table border="0" cellpadding="0" cellspacing="0" style="max-width:600px;    margin-top: 50px;" width="100%" class="wrapperWebview">
+					<tr>
+						<td align="center" valign="top">
+							<!-- Content Table Open // -->
+							<table border="0" cellpadding="0" cellspacing="0" width="100%">
+								<tr>
+									<td align="center" valign="middle" style="padding-top:20px;padding-bottom:20px;    background: whitesmoke;" class="emailLogo">
+										<!-- Logo and Link // -->
+										<a href="#" target="_blank" style="text-decoration:none;">
+											<img src="https://etmaam.com.sa/assets/front/img/logo.png" alt="" width="150" border="0" style="width:100%; max-width:150px;height:auto; display:block;"/>
+										</a>
+									</td>
+								</tr>
+							</table>
+							<!-- Content Table Close // -->
+						</td>
+					</tr>
+				</table>
+				<!-- Email Wrapper Header Close //-->
+
+				<!-- Email Wrapper Body Open // -->
+				<table border="0" cellpadding="0" cellspacing="0" style="max-width:600px;" width="100%" class="wrapperBody">
+					<tr>
+						<td align="center" valign="top">
+
+							<!-- Table Card Open // -->
+							<table border="0" cellpadding="0" cellspacing="0" style="background-color:#FFFFFF;border-color:#E5E5E5; border-style:solid; border-width:0 1px 1px 1px;" width="100%" class="tableCard">
+
+
+
+								<tr>
+									<td align="center" valign="top" style="padding-bottom:40px ;padding-top: 40px;" class="imgHero">
+										<!-- Hero Image // -->
+										<a href="#" target="_blank" style="text-decoration:none;">
+											<img src="https://etmaam.com.sa/assets/front/img/user-subscribe.png" width="300" alt="" border="0" style="width:100%; max-width:150px; height:auto; display:block;" />
+										</a>
+									</td>
+								</tr>
+
+								<tr>
+									<td align="center" valign="top" style="padding-bottom:5px;padding-left:20px;padding-right:20px;" class="mainTitle">
+										<!-- Main Title Text // -->
+										<h2 class="text" style="color:#000000; font-size:28px; font-weight:600; font-style:normal; letter-spacing:normal; line-height:36px; text-transform:none; text-align:center; padding:0; margin:0">
+											طلب انضمام جديد #' . $req->id . ' | ' . $request->fullname . '
+										</h2>
+									</td>
+								</tr>
+
+								<tr>
+									<td align="center" valign="top" style="padding-bottom:18px;padding-left:20px;padding-right:20px;" class="subTitle">
+										<!-- Sub Title Text // -->
+										<h4 class="text" style="color:#225476; font-size:20px; margin:3px 0; font-weight:600; font-style:normal; letter-spacing:normal; line-height:26px; text-transform:none; text-align:center; padding:0; margin:5">
+											 اسم المنشأة
+										</h4>
+										<h4 class="text" style="color:#666666; font-size:20px; margin:3px 0; font-weight:600; font-style:normal; letter-spacing:normal; line-height:26px; text-transform:none; text-align:center; padding:0; margin:5">
+											' . $request->company_name . '
+										</h4>
+										<h4 class="text" style="color:#225476; font-size:20px; margin:3px 0; font-weight:600; font-style:normal; letter-spacing:normal; line-height:26px; text-transform:none; text-align:center; padding:0; margin:5">
+											رقم السجل
+										</h4>
+										<h4 class="text" style="color:#666666; font-size:20px; margin:3px 0; font-weight:600; font-style:normal; letter-spacing:normal; line-height:26px; text-transform:none; text-align:center; padding:0; margin:5">
+											' . $request->cr . '
+										</h4>
+										<h4 class="text" style="color:#225476; font-size:20px; margin:3px 0; font-weight:600; font-style:normal; letter-spacing:normal; line-height:26px; text-transform:none; text-align:center; padding:0; margin:5">
+											اسم المسؤول
+										</h4>
+										<h4 class="text" style="color:#666666; font-size:20px; margin:3px 0; font-weight:600; font-style:normal; letter-spacing:normal; line-height:26px; text-transform:none; text-align:center; padding:0; margin:5">
+											' . $request->fullname . '
+										</h4>
+										<h4 class="text" style="color:#225476; font-size:20px; margin:3px 0; font-weight:600; font-style:normal; letter-spacing:normal; line-height:26px; text-transform:none; text-align:center; padding:0; margin:5">
+											رقم الجوال
+										</h4>
+										<h4 class="text" style="color:#666666; font-size:20px; margin:3px 0; font-weight:600; font-style:normal; letter-spacing:normal; line-height:26px; text-transform:none; text-align:center; padding:0; margin:5">
+											' . $request->mobile . '
+										</h4>
+										<h4 class="text" style="color:#225476; font-size:20px;margin:3px 0;  font-weight:600; font-style:normal; letter-spacing:normal; line-height:26px; text-transform:none; text-align:center; padding:0; margin:5">
+											البريد الإلكتروني
+										</h4>
+										<h4 class="text" style="color:#666666; font-size:20px;margin:3px 0;  font-weight:600; font-style:normal; letter-spacing:normal; line-height:26px; text-transform:none; text-align:center; padding:0; margin:5">
+											' . $request->email . '
+										</h4>
+										<h4 class="text" style="color:#225476; font-size:20px;margin:3px 0;  font-weight:600; font-style:normal; letter-spacing:normal; line-height:26px; text-transform:none; text-align:center; padding:0; margin:5">
+											المدينة
+										</h4>
+										<h4 class="text" style="color:#666666; font-size:20px;margin:3px 0;  font-weight:600; font-style:normal; letter-spacing:normal; line-height:26px; text-transform:none; text-align:center; padding:0; margin:5">
+											' . $request->city . '
+										</h4>
+										<h4 class="text" style="color:#225476; font-size:20px;margin:3px 0;  font-weight:600; font-style:normal; letter-spacing:normal; line-height:26px; text-transform:none; text-align:center; padding:0; margin:5">
+											الوقت المناسب للتواصل
+										</h4>
+										<h4 class="text" style="color:#666666; font-size:20px;margin:3px 0;  font-weight:600; font-style:normal; letter-spacing:normal; line-height:26px; text-transform:none; text-align:center; padding:0; margin:5">
+											' . $request->suggested_time . '
+										</h4>
+										<h4 class="text" style="color:#225476; font-size:20px;margin:3px 0;  font-weight:600; font-style:normal; letter-spacing:normal; line-height:26px; text-transform:none; text-align:center; padding:0; margin:5">
+										نوع الشريك
+										</h4>
+										<h4 class="text" style="color:#666666; font-size:20px;margin:3px 0;  font-weight:600; font-style:normal; letter-spacing:normal; line-height:26px; text-transform:none; text-align:center; padding:0; margin:5">
+										' . $request->partner_type . '
+										</h4>
+										<h4 class="text" style="color:#225476; font-size:20px;margin:3px 0;  font-weight:600; font-style:normal; letter-spacing:normal; line-height:26px; text-transform:none; text-align:center; padding:0; margin:5">
+											 الملاحظات:
+										</h4>
+
+									</td>
+								</tr>
+
+								<tr>
+									<td align="center" valign="top" style="padding-left:20px;padding-right:20px;padding-bottom:40px;" class="containtTable">
+
+										<table border="0" cellpadding="0" cellspacing="0" width="100%" class="tableDescription">
+											<tr>
+												<td align="center" valign="top" style="padding-bottom:20px;" class="description">
+													<!-- Description Text// -->
+													<p class="text" style="width:500px;color:#666666; font-size:18px; font-weight:400; font-style:normal; letter-spacing:normal; line-height:22px; text-transform:none; text-align:center; padding:0; margin:0">
+														' . $request->notes . '
+													</p>
+												</td>
+											</tr>
+										</table>
+
+
+									</td>
+								</tr>
+
+
+
+
+							</table>
+							<!-- Table Card Close// -->
+
+							<!-- Space -->
+							<table border="0" cellpadding="0" cellspacing="0" width="100%" class="space">
+								<tr>
+									<td height="30" style="font-size:1px;line-height:1px;">&nbsp;</td>
+								</tr>
+							</table>
+
+						</td>
+					</tr>
+				</table>
+				<!-- Email Wrapper Body Close // -->
+
+				<!-- Email Wrapper Footer Open // -->
+				<table border="0" cellpadding="0" cellspacing="0" style="max-width:600px;" width="100%" class="wrapperFooter">
+					<tr>
+						<td align="center" valign="top">
+							<!-- Content Table Open// -->
+							<table border="0" cellpadding="0" cellspacing="0" width="100%" class="footer">
+								<tr>
+									<td align="center" valign="top" style="padding-top:10px;padding-bottom:10px;padding-left:10px;padding-right:10px;" class="socialLinks">
+										<!-- Social Links (Facebook)// -->
+										<a href="https://www.facebook.com/etmaam2/" target="_blank" style="display:inline-block;" class="facebook">
+											<img src="https://etmaam.com.sa/assets/front/img/facebook.png" alt="" width="40" border="0" style="height:auto; width:100%; max-width:40px; margin-left:2px; margin-right:2px" />
+										</a>
+										<!-- Social Links (Twitter)// -->
+										<a href="https://twitter.com/etmaam2" target="_blank" style="display:inline-block;" class="twitter">
+											<img src="https://etmaam.com.sa/assets/front/img/twitter.png" alt="" width="40" border="0" style="height:auto; width:100%; max-width:40px; margin-left:2px; margin-right:2px" />
+										</a>
+
+										<!-- Social Links (Instagram)// -->
+										<a href="https://www.instagram.com/etmaam2/" target="_blank" style="display:inline-block;" class="instagram">
+											<img src="https://etmaam.com.sa/assets/front/img/instagram.png" alt="" width="40" border="0" style="height:auto; width:100%; max-width:40px; margin-left:2px; margin-right:2px" />
+										</a>
+										<!-- Social Links (Linkdin)// -->
+										<a href="https://www.linkedin.com/company/etmaam2" target="_blank" style="display:inline-block;" class="linkdin">
+											<img src="https://etmaam.com.sa/assets/front/img/linkdin.png" alt="" width="40" border="0" style="height:auto; width:100%; max-width:40px; margin-left:2px; margin-right:2px" />
+										</a>
+									</td>
+								</tr>
+
+								<tr>
+									<td align="center" valign="top" style="padding-top:10px;padding-bottom:5px;padding-left:10px;padding-right:10px;" class="brandInfo">
+										<!-- Brand Information // -->
+										<p class="text" style="color:#777777; font-size:12px; font-weight:400; font-style:normal; letter-spacing:normal; line-height:20px; text-transform:none; text-align:center; padding:0; margin:0;">&copy;&nbsp; اتمام للخدمات. | 2022 <span> المنطقة الوسطى - الرياض</span>
+										</p>
+									</td>
+								</tr>
+
+								<tr>
+									<td align="center" valign="top" style="padding-top:0px;padding-bottom:20px;padding-left:10px;padding-right:10px;" class="footerLinks">
+										<!-- Use Full Links (Privacy Policy)// -->
+										<p class="text" style="color:#777777; font-size:12px; font-weight:400; font-style:normal; letter-spacing:normal; line-height:20px; text-transform:none; text-align:center; padding:0; margin:0;" >
+										<a href="https://etmaam.com.sa/about" style="color:#777777;text-decoration:underline;" target="_blank"> ماذا عنا  </a>&nbsp;|&nbsp;<a href="https://etmaam.com.sa/serv_req" style="color:#777777;text-decoration:underline;" target="_blank"> اطلب خدمة </a>&nbsp;|&nbsp;<a href="https://etmaam.com.sa/" style="color:#777777;text-decoration:underline;" target="_blank"> الصفحة الرئيسية  </a>
+										</p>
+									</td>
+								</tr>
+
+								<tr>
+									<td align="center" valign="top" style="padding-top:0px;padding-bottom:10px;padding-left:10px;padding-right:10px;" class="footerEmailInfo">
+										<!-- Information of NewsLetter (Subscribe Info)// -->
+										<p class="text" style="color:#777777; font-weight:400; font-style:normal; letter-spacing:normal; line-height:20px; text-transform:none; text-align:center; padding:0; margin:0;" >
+										اذا كان لديك اي استفسار يمكنك التواصل معنا <a href="mailto:info@etmaam.com.sa" style="color:#777777;text-decoration:underline;" target="_blank">info@etmaam.com.sa</a><br>
+										</p>
+									</td>
+								</tr>
+
+
+
+								<!-- Space -->
+								<tr>
+									<td height="30" style="font-size:1px;line-height:1px;">&nbsp;</td>
+								</tr>
+							</table>
+							<!-- Content Table Close// -->
+						</td>
+					</tr>
+
+					<!-- Space -->
+					<tr>
+						<td height="30" style="font-size:1px;line-height:1px;">&nbsp;</td>
+					</tr>
+				</table>
+				<!-- Email Wrapper Footer Close // -->
+
+				<!--[if (gte mso 9)|(IE)]></td></tr></table><![endif]-->
+			</td>
+		</tr>
+	</table>
+
+</center>
+</body>
+</html>';
+
+        if ($currentLang->code == 'ar') {
+            $userMsg = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+	<!--[if (gte mso 9)|(IE)]>
+	<xml>
+		<o:OfficeDocumentSettings>
+			<o:AllowPNG/>
+			<o:PixelsPerInch>96</o:PixelsPerInch>
+		</o:OfficeDocumentSettings>
+	</xml>
+	<![endif]-->
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="width=device-width" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<title>etmam Email Template</title>
+
+	<!-- Google Fonts Link -->
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
+
+	<style type="text/css">
+
+		/*------ Client-Specific Style ------ */
+		@-ms-viewport{width:device-width;}
+		table, td{mso-table-lspace:0pt; mso-table-rspace:0pt;}
+		img{-ms-interpolation-mode:bicubic; border: 0;}
+		p, a, li, td, blockquote{mso-line-height-rule:exactly;}
+		p, a, li, td, body, table, blockquote{-ms-text-size-adjust:100%; -webkit-text-size-adjust:100%;}
+		#outlook a{padding:0;}
+		.ReadMsgBody{width:100%;} .ExternalClass{width:100%;}
+		.ExternalClass,.ExternalClass div,.ExternalClass font,.ExternalClass p,.ExternalClass span,.ExternalClass td,img{line-height:100%;}
+
+		/*------ Reset Style ------ */
+		*{-webkit-text-size-adjust:none;-webkit-text-resize:100%;text-resize:100%;}
+		table{border-spacing: 0 !important;}
+		h1, h2, h3, h4, h5, h6, p{display:block; Margin:0; padding:0;}
+		img, a img{border:0; height:auto; outline:none; text-decoration:none;}
+		#bodyTable, #bodyCell{ margin:0; padding:0; width:100%;}
+		body {height:100%; margin:0; padding:0; width:100%;}
+
+		.appleLinks a {color: #c2c2c2 !important; text-decoration: none;}
+        span.preheader { display: none !important; }
+
+		/*------ Google Font Style ------ */
+		[style*="Open Sans"],.text {font-family:"Open Sans", Helvetica, Arial, sans-serif !important;}
+		/*------ General Style ------ */
+		.wrapperWebview, .wrapperBody, .wrapperFooter{width:100%; max-width:600px; Margin:0 auto;}
+
+		/*------ Column Layout Style ------ */
+		.tableCard {text-align:center; font-size:0;}
+
+		/*------ Images Style ------ */
+		.imgHero img{ width:600px; height:auto; }
+
+	</style>
+
+	<style type="text/css">
+		/*------ Media Width 480 ------ */
+		@media screen and (max-width:640px) {
+			table[class="wrapperWebview"]{width:100% !important; }
+			table[class="wrapperEmailBody"]{width:100% !important; }
+			table[class="wrapperFooter"]{width:100% !important; }
+			td[class="imgHero"] img{ width:100% !important;}
+			.hideOnMobile {display:none !important; width:0; overflow:hidden;}
+		}
+	</style>
+
+</head>
+
+<body dir="rtl" style="background-color:#F9F9F9;">
+<center>
+
+<table border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout:fixed;background-color:#F9F9F9;" id="bodyTable">
+	<tr>
+		<td align="center" valign="top" style="padding-right:10px;padding-left:10px;" id="bodyCell">
+		<!--[if (gte mso 9)|(IE)]><table align="center" border="0" cellspacing="0" cellpadding="0" style="width:600px;" width="300"><tr><td align="center" valign="top"><![endif]-->
+
+
+
+		<!-- Email Wrapper Header Open //-->
+		<table border="0" cellpadding="0" cellspacing="0" style="max-width:600px;    margin-top: 50px;" width="100%" class="wrapperWebview">
+			<tr>
+				<td align="center" valign="top">
+					<!-- Content Table Open // -->
+					<table border="0" cellpadding="0" cellspacing="0" width="100%">
+						<tr>
+							<td align="center" valign="middle" style="padding-top:20px;padding-bottom:20px;    background: whitesmoke;" class="emailLogo">
+								<!-- Logo and Link // -->
+								<a href="#" target="_blank" style="text-decoration:none;">
+									<img src="https://etmaam.com.sa/assets/front/img/logo.png" alt="" width="150" border="0" style="width:100%; max-width:150px;height:auto; display:block;"/>
+								</a>
+							</td>
+						</tr>
+					</table>
+					<!-- Content Table Close // -->
+				</td>
+			</tr>
+		</table>
+		<!-- Email Wrapper Header Close //-->
+
+		<!-- Email Wrapper Body Open // -->
+		<table border="0" cellpadding="0" cellspacing="0" style="max-width:600px;" width="100%" class="wrapperBody">
+			<tr>
+				<td align="center" valign="top">
+
+					<!-- Table Card Open // -->
+					<table border="0" cellpadding="0" cellspacing="0" style="background-color:#FFFFFF;border-color:#E5E5E5; border-style:solid; border-width:0 1px 1px 1px;" width="100%" class="tableCard">
+
+
+
+						<tr>
+							<td align="center" valign="top" style="padding-bottom:40px ;padding-top: 40px;" class="imgHero">
+								<!-- Hero Image // -->
+								<a href="#" target="_blank" style="text-decoration:none;">
+									<img src="https://etmaam.com.sa/assets/front/img/user-subscribe.png" width="300" alt="" border="0" style="width:100%; max-width:150px; height:auto; display:block;" />
+								</a>
+							</td>
+						</tr>
+
+						<tr>
+							<td align="center" valign="top" style="padding-bottom:5px;padding-left:20px;padding-right:20px;" class="mainTitle">
+								<!-- Main Title Text // -->
+								<h2 class="text" style="color:#000000;  font-size:28px; font-weight:600; font-style:normal; letter-spacing:normal; line-height:36px; text-transform:none; text-align:center; padding:0; margin:0">
+									مرحبا<span>"' . $request->fullname . '"</span>
+								</h2>
+							</td>
+						</tr>
+
+						<tr>
+							<td align="center" valign="top" style="padding-bottom:18px;padding-left:20px;padding-right:20px;" class="subTitle">
+								<!-- Sub Title Text // -->
+								<h4 class="text" style="color:#225476;  font-size:24px; font-weight:600; font-style:normal; letter-spacing:normal; line-height:26px; text-transform:none; text-align:center; padding:0; margin:5">
+									لقد تم استقبال طلب الانضمام بنجاح
+								</h4>
+							</td>
+						</tr>
+
+						<tr>
+							<td align="center" valign="top" style="padding-left:20px;padding-right:20px;padding-bottom:40px;" class="containtTable">
+
+								<table border="0" cellpadding="0" cellspacing="0" width="100%" class="tableDescription">
+									<tr>
+										<td align="center" valign="top" style="padding-bottom:20px;" class="description">
+											<!-- Description Text// -->
+											<p class="text" style="color:#666666;  font-size:18px; font-weight:400; font-style:normal; letter-spacing:normal; line-height:22px; text-transform:none; text-align:center; padding:0; margin:0">
+												نشكركم على طلبكم وسيتم التواصل معكم
+											</p>
+										</td>
+									</tr>
+								</table>
+
+
+							</td>
+						</tr>
+
+
+
+
+					</table>
+					<!-- Table Card Close// -->
+
+					<!-- Space -->
+					<table border="0" cellpadding="0" cellspacing="0" width="100%" class="space">
+						<tr>
+							<td height="30" style="font-size:1px;line-height:1px;">&nbsp;</td>
+						</tr>
+					</table>
+
+				</td>
+			</tr>
+		</table>
+		<!-- Email Wrapper Body Close // -->
+
+		<!-- Email Wrapper Footer Open // -->
+		<table border="0" cellpadding="0" cellspacing="0" style="max-width:600px;" width="100%" class="wrapperFooter">
+			<tr>
+				<td align="center" valign="top">
+					<!-- Content Table Open// -->
+					<table border="0" cellpadding="0" cellspacing="0" width="100%" class="footer">
+						<tr>
+							<td align="center" valign="top" style="padding-top:10px;padding-bottom:10px;padding-left:10px;padding-right:10px;" class="socialLinks">
+								<!-- Social Links (Facebook)// -->
+								<a href="https://www.facebook.com/etmaam2/" target="_blank" style="display:inline-block;" class="facebook">
+									<img src="https://etmaam.com.sa/assets/front/img/facebook.png" alt="" width="40" border="0" style="height:auto; width:100%; max-width:40px; margin-left:2px; margin-right:2px" />
+								</a>
+								<!-- Social Links (Twitter)// -->
+								<a href="https://twitter.com/etmaam2" target="_blank" style="display:inline-block;" class="twitter">
+									<img src="https://etmaam.com.sa/assets/front/img/twitter.png" alt="" width="40" border="0" style="height:auto; width:100%; max-width:40px; margin-left:2px; margin-right:2px" />
+								</a>
+
+								<!-- Social Links (Instagram)// -->
+								<a href="https://www.instagram.com/etmaam2/" target="_blank" style="display:inline-block;" class="instagram">
+									<img src="https://etmaam.com.sa/assets/front/img/instagram.png" alt="" width="40" border="0" style="height:auto; width:100%; max-width:40px; margin-left:2px; margin-right:2px" />
+								</a>
+								<!-- Social Links (Linkdin)// -->
+								<a href="https://www.linkedin.com/company/etmaam2" target="_blank" style="display:inline-block;" class="linkdin">
+									<img src="https://etmaam.com.sa/assets/front/img/linkdin.png" alt="" width="40" border="0" style="height:auto; width:100%; max-width:40px; margin-left:2px; margin-right:2px" />
+								</a>
+							</td>
+						</tr>
+
+						<tr>
+							<td align="center" valign="top" style="padding-top:10px;padding-bottom:5px;padding-left:10px;padding-right:10px;" class="brandInfo">
+								<!-- Brand Information // -->
+								<p class="text" style="color:#777777;  font-size:12px; font-weight:400; font-style:normal; letter-spacing:normal; line-height:20px; text-transform:none; text-align:center; padding:0; margin:0;">&copy;&nbsp; اتمام للخدمات. | 2022 <span> المنطقة الوسطى - الرياض</span>
+								</p>
+							</td>
+						</tr>
+
+						<tr>
+							<td align="center" valign="top" style="padding-top:0px;padding-bottom:20px;padding-left:10px;padding-right:10px;" class="footerLinks">
+								<!-- Use Full Links (Privacy Policy)// -->
+								<p class="text" style="color:#777777;  font-size:12px; font-weight:400; font-style:normal; letter-spacing:normal; line-height:20px; text-transform:none; text-align:center; padding:0; margin:0;" >
+									<a href="https://etmaam.com.sa/about" style="color:#777777;text-decoration:underline;" target="_blank"> ماذا عنا  </a>&nbsp;|&nbsp;<a href="https://etmaam.com.sa/serv_req" style="color:#777777;text-decoration:underline;" target="_blank"> اطلب خدمة </a>&nbsp;|&nbsp;<a href="https://etmaam.com.sa/" style="color:#777777;text-decoration:underline;" target="_blank"> الصفحة الرئيسية  </a>
+								</p>
+							</td>
+						</tr>
+
+						<tr>
+							<td align="center" valign="top" style="padding-top:0px;padding-bottom:10px;padding-left:10px;padding-right:10px;" class="footerEmailInfo">
+								<!-- Information of NewsLetter (Subscribe Info)// -->
+								<p class="text" style="color:#777777;  font-size:12px; font-weight:400; font-style:normal; letter-spacing:normal; line-height:20px; text-transform:none; text-align:center; padding:0; margin:0;" >
+								اذا كان لديك اي استفسار يمكنك التواصل معنا <a href="mailto:info@etmaam.com.sa" style="color:#777777;text-decoration:underline;" target="_blank">info@etmaam.com.sa</a><br>
+								</p>
+							</td>
+						</tr>
+
+
+
+						<!-- Space -->
+						<tr>
+							<td height="30" style="font-size:1px;line-height:1px;">&nbsp;</td>
+						</tr>
+					</table>
+					<!-- Content Table Close// -->
+				</td>
+			</tr>
+
+			<!-- Space -->
+			<tr>
+				<td height="30" style="font-size:1px;line-height:1px;">&nbsp;</td>
+			</tr>
+		</table>
+		<!-- Email Wrapper Footer Close // -->
+
+		<!--[if (gte mso 9)|(IE)]></td></tr></table><![endif]-->
+		</td>
+	</tr>
+
+</table>
+
+</center>
+</body>
+</html>';
+        } else {
+            $userMsg = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+	<!--[if (gte mso 9)|(IE)]>
+	<xml>
+		<o:OfficeDocumentSettings>
+			<o:AllowPNG/>
+			<o:PixelsPerInch>96</o:PixelsPerInch>
+		</o:OfficeDocumentSettings>
+	</xml>
+	<![endif]-->
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="width=device-width" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<title>etmam Email Template</title>
+
+	<!-- Google Fonts Link -->
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
+
+	<style type="text/css">
+
+		/*------ Client-Specific Style ------ */
+		@-ms-viewport{width:device-width;}
+		table, td{mso-table-lspace:0pt; mso-table-rspace:0pt;}
+		img{-ms-interpolation-mode:bicubic; border: 0;}
+		p, a, li, td, blockquote{mso-line-height-rule:exactly;}
+		p, a, li, td, body, table, blockquote{-ms-text-size-adjust:100%; -webkit-text-size-adjust:100%;}
+		#outlook a{padding:0;}
+		.ReadMsgBody{width:100%;} .ExternalClass{width:100%;}
+		.ExternalClass,.ExternalClass div,.ExternalClass font,.ExternalClass p,.ExternalClass span,.ExternalClass td,img{line-height:100%;}
+
+		/*------ Reset Style ------ */
+		*{-webkit-text-size-adjust:none;-webkit-text-resize:100%;text-resize:100%;}
+		table{border-spacing: 0 !important;}
+		h1, h2, h3, h4, h5, h6, p{display:block; Margin:0; padding:0;}
+		img, a img{border:0; height:auto; outline:none; text-decoration:none;}
+		#bodyTable, #bodyCell{ margin:0; padding:0; width:100%;}
+		body {height:100%; margin:0; padding:0; width:100%;}
+
+		.appleLinks a {color: #c2c2c2 !important; text-decoration: none;}
+        span.preheader { display: none !important; }
+
+		/*------ Google Font Style ------ */
+		[style*="Open Sans"],.text {font-family:"Open Sans", Helvetica, Arial, sans-serif !important;}
+		/*------ General Style ------ */
+		.wrapperWebview, .wrapperBody, .wrapperFooter{width:100%; max-width:600px; Margin:0 auto;}
+
+		/*------ Column Layout Style ------ */
+		.tableCard {text-align:center; font-size:0;}
+
+		/*------ Images Style ------ */
+		.imgHero img{ width:600px; height:auto; }
+
+	</style>
+
+	<style type="text/css">
+		/*------ Media Width 480 ------ */
+		@media screen and (max-width:640px) {
+			table[class="wrapperWebview"]{width:100% !important; }
+			table[class="wrapperEmailBody"]{width:100% !important; }
+			table[class="wrapperFooter"]{width:100% !important; }
+			td[class="imgHero"] img{ width:100% !important;}
+			.hideOnMobile {display:none !important; width:0; overflow:hidden;}
+		}
+	</style>
+
+</head>
+
+<body dir="ltr" style="background-color:#F9F9F9;">
+<center>
+
+<table border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout:fixed;background-color:#F9F9F9;" id="bodyTable">
+	<tr>
+		<td align="center" valign="top" style="padding-right:10px;padding-left:10px;" id="bodyCell">
+		<!--[if (gte mso 9)|(IE)]><table align="center" border="0" cellspacing="0" cellpadding="0" style="width:600px;" width="300"><tr><td align="center" valign="top"><![endif]-->
+
+
+
+		<!-- Email Wrapper Header Open //-->
+		<table border="0" cellpadding="0" cellspacing="0" style="max-width:600px;    margin-top: 50px;" width="100%" class="wrapperWebview">
+			<tr>
+				<td align="center" valign="top">
+					<!-- Content Table Open // -->
+					<table border="0" cellpadding="0" cellspacing="0" width="100%">
+						<tr>
+							<td align="center" valign="middle" style="padding-top:20px;padding-bottom:20px;    background: whitesmoke;" class="emailLogo">
+								<!-- Logo and Link // -->
+								<a href="#" target="_blank" style="text-decoration:none;">
+									<img src="https://etmaam.com.sa/assets/front/img/logo.png" alt="" width="150" border="0" style="width:100%; max-width:150px;height:auto; display:block;"/>
+								</a>
+							</td>
+						</tr>
+					</table>
+					<!-- Content Table Close // -->
+				</td>
+			</tr>
+		</table>
+		<!-- Email Wrapper Header Close //-->
+
+		<!-- Email Wrapper Body Open // -->
+		<table border="0" cellpadding="0" cellspacing="0" style="max-width:600px;" width="100%" class="wrapperBody">
+			<tr>
+				<td align="center" valign="top">
+
+					<!-- Table Card Open // -->
+					<table border="0" cellpadding="0" cellspacing="0" style="background-color:#FFFFFF;border-color:#E5E5E5; border-style:solid; border-width:0 1px 1px 1px;" width="100%" class="tableCard">
+
+
+
+						<tr>
+							<td align="center" valign="top" style="padding-bottom:40px ;padding-top: 40px;" class="imgHero">
+								<!-- Hero Image // -->
+								<a href="#" target="_blank" style="text-decoration:none;">
+									<img src="https://etmaam.com.sa/assets/front/img/user-subscribe.png" width="300" alt="" border="0" style="width:100%; max-width:150px; height:auto; display:block;" />
+								</a>
+							</td>
+						</tr>
+
+						<tr>
+							<td align="center" valign="top" style="padding-bottom:5px;padding-left:20px;padding-right:20px;" class="mainTitle">
+								<!-- Main Title Text // -->
+								<h2 class="text" style="color:#000000;  font-size:28px; font-weight:600; font-style:normal; letter-spacing:normal; line-height:36px; text-transform:none; text-align:center; padding:0; margin:0">
+									Dear <span>"' . $request->fullname . '"</span>
+								</h2>
+							</td>
+						</tr>
+
+						<tr>
+							<td align="center" valign="top" style="padding-bottom:18px;padding-left:20px;padding-right:20px;" class="subTitle">
+								<!-- Sub Title Text // -->
+								<h4 class="text" style="color:#225476;  font-size:24px; font-weight:600; font-style:normal; letter-spacing:normal; line-height:26px; text-transform:none; text-align:center; padding:0; margin:5">
+									Your partnership request has been received successfully.
+								</h4>
+							</td>
+						</tr>
+
+						<tr>
+							<td align="center" valign="top" style="padding-left:20px;padding-right:20px;padding-bottom:40px;" class="containtTable">
+
+								<table border="0" cellpadding="0" cellspacing="0" width="100%" class="tableDescription">
+									<tr>
+										<td align="center" valign="top" style="padding-bottom:20px;" class="description">
+											<!-- Description Text// -->
+											<p class="text" style="color:#666666;  font-size:18px; font-weight:400; font-style:normal; letter-spacing:normal; line-height:22px; text-transform:none; text-align:center; padding:0; margin:0">
+												Thank you for your trust, our concerned department will reach you shortly.
+											</p>
+										</td>
+									</tr>
+								</table>
+
+
+							</td>
+						</tr>
+
+
+
+
+					</table>
+					<!-- Table Card Close// -->
+
+					<!-- Space -->
+					<table border="0" cellpadding="0" cellspacing="0" width="100%" class="space">
+						<tr>
+							<td height="30" style="font-size:1px;line-height:1px;">&nbsp;</td>
+						</tr>
+					</table>
+
+				</td>
+			</tr>
+		</table>
+		<!-- Email Wrapper Body Close // -->
+
+		<!-- Email Wrapper Footer Open // -->
+		<table border="0" cellpadding="0" cellspacing="0" style="max-width:600px;" width="100%" class="wrapperFooter">
+			<tr>
+				<td align="center" valign="top">
+					<!-- Content Table Open// -->
+					<table border="0" cellpadding="0" cellspacing="0" width="100%" class="footer">
+						<tr>
+							<td align="center" valign="top" style="padding-top:10px;padding-bottom:10px;padding-left:10px;padding-right:10px;" class="socialLinks">
+								<!-- Social Links (Facebook)// -->
+								<a href="https://www.facebook.com/etmaam2/" target="_blank" style="display:inline-block;" class="facebook">
+									<img src="https://etmaam.com.sa/assets/front/img/facebook.png" alt="" width="40" border="0" style="height:auto; width:100%; max-width:40px; margin-left:2px; margin-right:2px" />
+								</a>
+								<!-- Social Links (Twitter)// -->
+								<a href="https://twitter.com/etmaam2" target="_blank" style="display:inline-block;" class="twitter">
+									<img src="https://etmaam.com.sa/assets/front/img/twitter.png" alt="" width="40" border="0" style="height:auto; width:100%; max-width:40px; margin-left:2px; margin-right:2px" />
+								</a>
+
+								<!-- Social Links (Instagram)// -->
+								<a href="https://www.instagram.com/etmaam2/" target="_blank" style="display:inline-block;" class="instagram">
+									<img src="https://etmaam.com.sa/assets/front/img/instagram.png" alt="" width="40" border="0" style="height:auto; width:100%; max-width:40px; margin-left:2px; margin-right:2px" />
+								</a>
+								<!-- Social Links (Linkdin)// -->
+								<a href="https://www.linkedin.com/company/etmaam2" target="_blank" style="display:inline-block;" class="linkdin">
+									<img src="https://etmaam.com.sa/assets/front/img/linkdin.png" alt="" width="40" border="0" style="height:auto; width:100%; max-width:40px; margin-left:2px; margin-right:2px" />
+								</a>
+							</td>
+						</tr>
+
+						<tr>
+							<td align="center" valign="top" style="padding-top:10px;padding-bottom:5px;padding-left:10px;padding-right:10px;" class="brandInfo">
+								<!-- Brand Information // -->
+								<p class="text" style="color:#777777;  font-size:12px; font-weight:400; font-style:normal; letter-spacing:normal; line-height:20px; text-transform:none; text-align:center; padding:0; margin:0;">&copy;&nbsp; Etmaam for Services | 2022 <span> Riyadh </span>
+								</p>
+							</td>
+						</tr>
+
+						<tr>
+							<td align="center" valign="top" style="padding-top:0px;padding-bottom:20px;padding-left:10px;padding-right:10px;" class="footerLinks">
+								<!-- Use Full Links (Privacy Policy)// -->
+								<p class="text" style="color:#777777;  font-size:12px; font-weight:400; font-style:normal; letter-spacing:normal; line-height:20px; text-transform:none; text-align:center; padding:0; margin:0;" >
+									<a href="https://etmaam.com.sa/about" style="color:#777777;text-decoration:underline;" target="_blank"> About us  </a>&nbsp;|&nbsp;<a href="https://etmaam.com.sa/serv_req" style="color:#777777;text-decoration:underline;" target="_blank"> Request Service </a>&nbsp;|&nbsp;<a href="https://etmaam.com.sa/" style="color:#777777;text-decoration:underline;" target="_blank"> Home  </a>
+								</p>
+							</td>
+						</tr>
+
+						<tr>
+							<td align="center" valign="top" style="padding-top:0px;padding-bottom:10px;padding-left:10px;padding-right:10px;" class="footerEmailInfo">
+								<!-- Information of NewsLetter (Subscribe Info)// -->
+								<p class="text" style="color:#777777;  font-size:12px; font-weight:400; font-style:normal; letter-spacing:normal; line-height:20px; text-transform:none; text-align:center; padding:0; margin:0;" >
+								For any inquiries, please email us at <a href="mailto:info@etmaam.com.sa" style="color:#777777;text-decoration:underline;" target="_blank">info@etmaam.com.sa</a><br>
+								</p>
+							</td>
+						</tr>
+
+
+
+						<!-- Space -->
+						<tr>
+							<td height="30" style="font-size:1px;line-height:1px;">&nbsp;</td>
+						</tr>
+					</table>
+					<!-- Content Table Close// -->
+				</td>
+			</tr>
+
+			<!-- Space -->
+			<tr>
+				<td height="30" style="font-size:1px;line-height:1px;">&nbsp;</td>
+			</tr>
+		</table>
+		<!-- Email Wrapper Footer Close // -->
+
+		<!--[if (gte mso 9)|(IE)]></td></tr></table><![endif]-->
+		</td>
+	</tr>
+
+</table>
+
+</center>
+</body>
+</html>';
+        }
+
+
+        $be = BasicExtended::first();
+
+
+        $mail = new PHPMailer(true);
+
+        if ($be->is_smtp == 1) {
+            try {
+                //Server settings
+                // $mail->SMTPDebug = SMTP::DEBUG_SERVER;                      // Enable verbose debug output
+                //                $mail->isSMTP();                                            // Send using SMTP
+                $mail->Host       = $be->smtp_host;                    // Set the SMTP server to send through
+                $mail->SMTPAuth   = true;                                   // Enable SMTP authentication
+                $mail->Username   = $be->smtp_username;                     // SMTP username
+                $mail->Password   = $be->smtp_password;                               // SMTP password
+                $mail->SMTPSecure = $be->encryption;         // Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
+                $mail->Port       = $be->smtp_port;                                    // TCP port to connect to, use 465 for `PHPMailer::ENCRYPTION_SMTPS` above
+
+                //Recipients
+                $mail->setFrom($be->from_mail, $be->from_name);
+
+
+                $mail->addAddress($request->email);     // Add a recipient
+                //    $mail->addAddress('bashar@etmaam.com.sa');     // Add a recipient
+
+            } catch (Exception $e) {
+                // die($e->getMessage());
+            }
+        } else {
+            try {
+
+                //Recipients
+                $mail->setFrom($be->from_mail, $be->from_name);
+
+                $mail->addAddress($request->email);     // Add a recipient
+                //      $mail->addAddress('bashar@etmaam.com.sa');
+            } catch (Exception $e) {
+                // die($e->getMessage());
+            }
+        }
+
+        // Content
+        //  $mail->AltBody = 'برنامه شما از این ایمیل پشتیبانی نمی کند، برای دیدن آن، لطفا از برنامه دیگری استفاده نمائید'; // متنی برای کاربرانی که نمی توانند ایمیل را به درستی مشاهده کنند
+        $mail->CharSet = 'UTF-8';
+        $mail->ContentType = 'text/html';
+        $mail->isHTML(true);
+        // Set email format to HTML
+        if ($currentLang->code == 'ar') {
+            $mail->Subject = 'تم استقبال طلب الإنضمام..وسيتم التواصل معكم';
+        } else {
+            $mail->Subject = 'Your partnership request has been submitted';
+        }
+
+        $mail->Body    = $userMsg;
+
+        $mail->send();
+        $mail->clearAllRecipients();
+
+        if ($be->is_smtp == 1) {
+            try {
+                //Server settings
+                // $mail->SMTPDebug = SMTP::DEBUG_SERVER;                      // Enable verbose debug output
+                //                $mail->isSMTP();                                            // Send using SMTP
+                $mail->Host       = $be->smtp_host;                    // Set the SMTP server to send through
+                $mail->SMTPAuth   = true;                                   // Enable SMTP authentication
+                $mail->Username   = $be->smtp_username;                     // SMTP username
+                $mail->Password   = $be->smtp_password;                               // SMTP password
+                $mail->SMTPSecure = $be->encryption;         // Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
+                $mail->Port       = $be->smtp_port;                                    // TCP port to connect to, use 465 for `PHPMailer::ENCRYPTION_SMTPS` above
+
+                //Recipients
+                $mail->setFrom($be->from_mail, $be->from_name);
+
+
+                // Add a recipient
+                $mail->addAddress('adham@etmaam.com.sa');     // Add a
+                $mail->addAddress('ahmed.j@etmaam.com.sa');     // Add a recipient
+
+                $mail->addAddress('customer_service@etmaam.com.sa');     // Add a recipient
+                $mail->addAddress('abdullah.o@etmaam.com.sa');     // Add a recipient
+
+                $mail->addAddress('hedbah@etmaam.com.sa');     // Add a recipient
+                $mail->addAddress('sidra@etmaam.com.sa');
+                $mail->addAddress('mohammed.h@etmaam.com.sa');
+
+                $mail->addAddress('najat@etmaam.com.sa');
+                // Add a recipient
+                $mail->addAddress('modhaf@etmaam.com.sa');     // Add a recipient
+                // it emails
+                $mail->addAddress('design@etmaam.com.sa');     // Add a recipient
+                $mail->addAddress('kamal.j@etmaam.com.sa');     // Add a recipient
+
+                // $mail->addAddress('bashar@etmaam.com.sa');     // Add a recipient
+
+            } catch (Exception $e) {
+                // die($e->getMessage());
+            }
+        } else {
+            try {
+
+                //Recipients
+                $mail->setFrom($be->from_mail, $be->from_name);
+
+                // Add a recipient
+                $mail->addAddress('adham@etmaam.com.sa');     // Add a recipient
+                $mail->addAddress('ahmed.j@etmaam.com.sa');     // Add a recipient
+
+                $mail->addAddress('customer_service@etmaam.com.sa');     // Add a recipient
+                $mail->addAddress('abdullah.o@etmaam.com.sa');     // Add a recipient
+
+                $mail->addAddress('hedbah@etmaam.com.sa');     // Add a recipient
+                $mail->addAddress('sidra@etmaam.com.sa');
+                $mail->addAddress('mohammed.h@etmaam.com.sa');
+
+                $mail->addAddress('najat@etmaam.com.sa');
+                // Add a recipient
+                $mail->addAddress('modhaf@etmaam.com.sa');     // Add a recipient
+                // it emails
+                $mail->addAddress('design@etmaam.com.sa');     // Add a recipient
+                // $mail->addAddress('bashar@etmaam.com.sa');     // Add a recipient
+            } catch (Exception $e) {
+                // die($e->getMessage());
+            }
+        }
+        //   Mail::to($req->emp_email)->send(new App\Mail\NewServiceRequest($req));
+        $mail->CharSet = 'UTF-8';
+        $mail->ContentType = 'text/html';
+        $mail->isHTML(true);                                  // Set email format to HTML
+        $mail->Subject = 'طلب انضمام جديد #' . $req->id . ' | ' . $request->company_name;
+        $mail->Body    = $adminMsg;
+
+        if ($request->hasFile('docs')) {
+            for ($i = 0; $i < count($_FILES['docs']['name']); $i++) {
+                $mail->AddAttachment($_FILES['docs']['tmp_name'][$i], $_FILES['docs']['name'][$i]);
+            }
+        }
+
+        $mail->send();
+        //   Mail::to($req->emp_email)->send(new App\Mail\NewServiceRequest($req));
+
+        if ($currentLang->code == 'ar') {
+            $data['msg_title'] = 'تم ارسال طلبك بنجاح';
+            $data['msg'] = "نشكركم على طلب الانضمام وسيتم التواصل معكم بأقرب فرصة";
+        } else {
+            $data['msg_title'] = 'Your request has been submitted Successfully';
+            $data['msg'] = "Thank you for your request, We will get back to you";
+        }
+        return view('front.thanks', $data);
+    }
+
     public function services(Request $request)
     {
         if (session()->has('lang')) {
@@ -1628,6 +3779,12 @@ class FrontendController extends Controller
             $data['version'] = $version == 'dark' ? 'default' : $version;
             return view('front.services', $data);
         }
+    }
+    public function test()
+    {
+        $now = Carbon::now();
+        $code = "P1-" . $now->month . $now->year . '-' . rand(100000, 999999);
+        dd($code);
     }
 
     public function packages()
