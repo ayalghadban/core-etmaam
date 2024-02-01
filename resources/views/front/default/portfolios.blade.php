@@ -1,4 +1,4 @@
-@extends("front.$version.layout")
+@extends('front.default.layout')
 
 @section('pagename')
 -
@@ -19,7 +19,7 @@
 
 @section('content')
 <!--    case lists start   -->
-<div class="case-lists section-padding case-page pt-120 pb-110" id="masonry-portfolio">
+<div class="case-lists section-padding case-page" id="masonry-portfolio">
   <div class="container">
     @if (serviceCategory())
       <div class="row">
@@ -52,19 +52,19 @@
           </div>
         @else
           @foreach ($portfolios as $key => $portfolio)
-            <!--php-->
-            <!--  if (!empty($portfolio->service->scategory)) {-->
-            <!--    $portfolioCategory = $portfolio->service->scategory;-->
+            @php
+              if (!empty($portfolio->service->scategory)) {
+                $portfolioCategory = $portfolio->service->scategory;
 
-            <!--    $categoryName ?? '' = strtolower($portfolioCategory->name);-->
+                $categoryName = strtolower($portfolioCategory->name);
 
-            <!--    if (str_contains($categoryName ?? '', ' ')) {-->
-            <!--      // $categoryName ?? '' = str_replace(' ', '-', $categoryName ?? '');-->
-            <!--    }-->
-            <!--  }-->
-            <!--endphp-->
+                if (str_contains($categoryName, ' ')) {
+                  $categoryName = str_replace(' ', '-', $categoryName);
+                }
+              }
+            @endphp
 
-            <div class="col-lg-4 col-md-6 portfolio-column {{ $categoryName ?? '' }}">
+            <div class="col-lg-4 col-md-6 portfolio-column {{ $categoryName }}">
               <div class="single-case lazy" data-bg="{{asset('assets/front/img/portfolios/featured/'.$portfolio->featured_image)}}">
                 <div class="outer-container">
                   <div class="inner-container">

@@ -26,7 +26,62 @@ Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['web', 'auth:a
     Route::post('summernote/upload', 'Admin\SummernoteController@uploadFileManager')->name('lfm.summernote.upload');
 });
 
-Route::get('/backup', 'Front\FrontendController@backup');
+Route::get('/about', 'Front\FrontendController@about');
+Route::get('/cataloge', 'Front\FrontendController@cataloge');
+Route::get('/banks', 'Front\FrontendController@banks');
+Route::get('/links', 'Front\FrontendController@links');
+
+Route::get('/lp', 'Front\FrontendController@lp');
+Route::get('/downloads', 'Front\FrontendController@downloads')->name('download');
+Route::get('/downloads/{id}', 'Front\FrontendController@downloads_files')->name('download');
+Route::get('/thankyou', 'Front\FrontendController@thankyou');
+Route::get('/serv_req', 'Front\FrontendController@serv_req')->name('front.serv_req');
+Route::get('/serv-req', function(){
+    return redirect()->route('front.serv_req');
+});
+
+Route::get('/our-services', function(){
+    return redirect('https://etmaam.com.sa/assets/front/files/profile.pdf');
+});
+Route::get('/rf', function(){
+    return redirect('https://www.etmaam.com.sa/serv_req?msource=facebook&stype=quick');
+});
+Route::get('/rs', function(){
+    return redirect('https://www.etmaam.com.sa/serv_req?msource=snapchat&stype=quick');
+});
+Route::get('/ry', function(){
+    return redirect('https://www.etmaam.com.sa/serv_req?msource=youtube&stype=quick');
+});
+Route::get('/rk', function(){
+    return redirect('https://www.etmaam.com.sa/serv_req?msource=tiktok&stype=quick');
+});
+Route::get('/rw', function(){
+    return redirect('https://www.etmaam.com.sa/serv_req?msource=whatsapp&stype=quick');
+});
+Route::get('/rl', function(){
+    return redirect('https://www.etmaam.com.sa/serv_req?msource=linkedin&stype=quick');
+});
+Route::get('/re', function(){
+    return redirect('https://www.etmaam.com.sa/serv_req?msource=telegram&stype=quick');
+});
+
+
+Route::get('/WhatsApp', function(){
+    return redirect('https://wa.me/966533030283');
+});
+
+Route::get('/cloud', function(){
+    return redirect('https://etmaam.website/cloud/');
+});
+
+
+Route::post('/thank-you', 'Front\FrontendController@store_serv_req')->name('thank.you');
+
+
+
+
+
+
 
 
 /*=======================================================

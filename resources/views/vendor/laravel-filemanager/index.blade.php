@@ -361,7 +361,7 @@
                         let items = getSelectedItems();
                         let fd = new FormData();
                         items.forEach(function(item) {
-                            let modItemUrl = item.url.replace("{{url('/')}}" + '/', ""); 
+                            let modItemUrl = item.url.replace("{{url('/')}}" + '/', "");
                             fd.append('items[]', modItemUrl);
                         });
 

@@ -15,7 +15,7 @@
 
 @section('content')
   <!--   FAQ section start   -->
-  <section class="faq-area-v1 pt-120 pb-120">
+  <section class="faq-area-v1">
     <div class="container">
       <div class="row">
 
@@ -54,7 +54,7 @@
                                 </a>
                                 <div id="{{ 'collapse' . $qa->id }}" class="collapse {{ $loop->iteration == 1 ? 'show' : '' }}" aria-labelledby="heading1" data-parent="{{ '#accordion' . $category->id }}">
                                     <div class="card-body">
-                                    <p>{{ $qa->answer }}</p>
+                                    <p>{!! preg_replace('/(http|https|ftp|ftps)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/', '<a href="$0" target="_blank">$0</a>', str_replace('-','<br>',$qa->answer))  !!}</p>
                                     </div>
                                 </div>
                                 </div>

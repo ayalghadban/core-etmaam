@@ -283,7 +283,7 @@
 
     {{-- Cookie alert dialog start --}}
     @if ($be->cookie_alert_status == 1)
-    @include('cookie-consent::index')
+    @include('cookieConsent::index')
     @endif
     {{-- Cookie alert dialog end --}}
 
