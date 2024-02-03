@@ -9,7 +9,7 @@ use App\Bcategory;
 use App\Language;
 use App\Blog;
 use App\Megamenu;
-use Validator;
+use Illuminate\Support\Facades\Validator ;
 use Session;
 
 class BlogController extends Controller
@@ -91,7 +91,7 @@ class BlogController extends Controller
         $blog->serial_number = $request->serial_number;
         $blog->related_article_id = $request->related_article_id;
         $blog->author = $request->author;
-        
+
         if ($request->filled('image')) {
             $filename = uniqid() .'.'. $extImage;
             @copy($image, 'assets/front/img/blogs/' . $filename);
