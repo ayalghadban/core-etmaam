@@ -89,7 +89,9 @@ class BlogController extends Controller
         $blog->meta_keywords = $request->meta_keywords;
         $blog->meta_description = $request->meta_description;
         $blog->serial_number = $request->serial_number;
-
+        $blog->related_article_id = $request->related_article_id;
+        $blog->author = $request->author;
+        
         if ($request->filled('image')) {
             $filename = uniqid() .'.'. $extImage;
             @copy($image, 'assets/front/img/blogs/' . $filename);
@@ -154,6 +156,8 @@ class BlogController extends Controller
         $blog->meta_keywords = $request->meta_keywords;
         $blog->meta_description = $request->meta_description;
         $blog->serial_number = $request->serial_number;
+        $blog->related_article_id = $request->related_article_id;
+        $blog->author = $request->author;
 
         if ($request->filled('image')) {
             @unlink('assets/front/img/blogs/' . $blog->main_image);

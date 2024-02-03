@@ -82,6 +82,7 @@ class FrontendController extends Controller
         Config::set('captcha.secret', $bs->google_recaptcha_secret_key);
     }
 
+
     public function index()
     {
         if (session()->has('lang')) {
@@ -1647,12 +1648,6 @@ class FrontendController extends Controller
             'period' => 'required',
             'fullname' => 'required'
         ];
-
-
-
-
-
-
 
         $validator = \Illuminate\Support\Facades\Validator::make($request->all(), $rules);
 
@@ -4115,7 +4110,7 @@ class FrontendController extends Controller
         return view('front.career-details', $data);
     }
 
-    public function blogs(Request $request)
+     public function blogs(Request $request)
     {
         if (session()->has('lang')) {
             $currentLang = Language::where('code', session()->get('lang'))->first();
@@ -4159,7 +4154,7 @@ class FrontendController extends Controller
             })
             ->when($currentLang, function ($query, $currentLang) {
                 return $query->where('language_id', $currentLang->id);
-            })->orderBy('serial_number', 'ASC')->paginate(6);
+            })->orderBy('created_at', 'desc')->paginate(6);
 
         $version = $be->theme_version;
 
@@ -4172,6 +4167,7 @@ class FrontendController extends Controller
 
         return view('front.blogs', $data);
     }
+
 
     public function blogdetails($slug)
     {
@@ -4740,7 +4736,7 @@ class FrontendController extends Controller
         }
     }
 
-    public function changeLanguage($lang)
+    public function changeLanguage($lang, Request $request)
     {
         session()->put('lang', $lang);
         app()->setLocale($lang);
@@ -4748,7 +4744,9 @@ class FrontendController extends Controller
         $be = be::first();
         $version = $be->theme_version;
 
-        return redirect()->route('front.index');
+        $redirect = $request->input('redirect') ? $request->input('redirect') : url()->previous();
+
+        return redirect($redirect);
     }
 
     public function packageorder(Request $request, $id)
