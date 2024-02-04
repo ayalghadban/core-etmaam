@@ -70,6 +70,7 @@ use Auth;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator as FacadesValidator;
 
 class FrontendController extends Controller
 {
@@ -5116,7 +5117,7 @@ class FrontendController extends Controller
             'email' => 'required|email|unique:subscribers'
         ];
 
-        $validator = Validator::make($request->all(), $rules);
+        $validator = FacadesValidator::make($request->all(), $rules);
 
         if ($validator->fails()) {
             return response()->json(array('errors' => $validator->getMessageBag()->toArray()));
@@ -5131,7 +5132,7 @@ class FrontendController extends Controller
 
     public function quote()
     {
-        
+
         if (session()->has('lang')) {
             $currentLang = Language::where('code', session()->get('lang'))->first();
         } else {

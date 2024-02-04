@@ -29,6 +29,7 @@ class UserController extends Controller
     }
 
 
+    
     public function packages() {
         if (session()->has('lang')) {
             $currentLang = Language::where('code', session()->get('lang'))->first();
@@ -41,7 +42,6 @@ class UserController extends Controller
 
         return view('user.packages', $data);
     }
-
 
 
     public function profile()

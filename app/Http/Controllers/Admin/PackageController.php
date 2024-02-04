@@ -41,6 +41,8 @@ class PackageController extends Controller
     return view('admin.package.index', $data);
   }
 
+
+  
   public function edit(Request $request, $id)
   {
     $lang = Language::where('code', $request->language)->first();

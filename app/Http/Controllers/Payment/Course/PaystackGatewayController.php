@@ -16,12 +16,12 @@ class PaystackGatewayController extends Controller
 {
   private $api_key;
 
-  public function __construct()
+  /*public function __construct()
   {
     $data = PaymentGateway::whereKeyword('paystack')->first();
     $payData = $data->convertAutoData();
     $this->api_key = $payData['secret_key'];
-  }
+  }*/
 
   public function redirectToPaystack(Request $request)
   {

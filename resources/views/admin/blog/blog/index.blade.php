@@ -283,6 +283,7 @@ class="mb-0 text-danger em"
     class="mb-0 text-danger em"
     ></p>
 </div>
+
 <div class="form-group">
     <label for="">Serial Number **</label>
     <input
@@ -298,6 +299,45 @@ class="mb-0 text-danger em"
     ></p>
     <p class="text-warning mb-0"><small>The higher the serial number is, the later the blog will be shown.</small></p>
 </div>
+
+
+
+<div class="form-group">
+    <label for=""> معرف اللغة الاخرى (في حال تريد نشر مقال بالعربي اضف رقم الانجليزي والعكس)
+       </label>
+    <input
+    type="number"
+    class="form-control ltr"
+    name="related_article_id"
+    value=""
+    placeholder="Enter Arabic Article id"
+    >
+    <p
+    id="errserial_number"
+    class="mb-0 text-danger em"
+    ></p>
+    <p class="text-warning mb-0"><small>يضاف فقط عن اضافة الخبر بالانجليزية.</small></p>
+</div>
+
+
+
+<div class="form-group">
+    <label for="">Author Name **</label>
+    <input
+    type="text"
+    class="form-control ltr"
+    name="author"
+    value=""
+    placeholder="Enter Author Name"
+    >
+    <p
+    id="errserial_number"
+    class="mb-0 text-danger em"
+    ></p>
+</div>
+
+
+
 <div class="form-group">
     <label for="">Meta Keywords</label>
     <input
