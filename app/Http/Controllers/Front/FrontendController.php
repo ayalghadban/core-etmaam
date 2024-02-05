@@ -2,75 +2,25 @@
 
 namespace App\Http\Controllers\Front;
 
-use App\Donation;
-use App\DonationDetail;
-use App\Event;
-use App\EventCategory;
-use App\Http\Controllers\Controller;
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
-use App\BasicSetting as BS;
-use App\BasicExtended as BE;
-use App\Slider;
-use App\Scategory;
-use App\Jcategory;
-use App\Portfolio;
-use App\Feature;
-use App\Point;
-use App\Statistic;
-use App\Testimonial;
-use App\Gallery;
-use App\GalleryCategory;
-use App\Faq;
-use App\Page;
-use App\Member;
-use App\Blog;
-use App\Partner;
-use App\Service;
-use App\Job;
-use App\Archive;
-use App\Article;
-use App\ArticleCategory;
-use App\Bcategory;
-use App\Subscriber;
-use App\Quote;
-use App\Language;
-use App\Package;
-use App\PackageOrder;
-use App\Admin;
-use App\BasicExtended;
-use App\BasicExtra;
-use App\CalendarEvent;
-use App\FAQCategory;
-use App\Home;
-use App\Mail\ContactMail;
-use App\Mail\OrderPackage;
-use App\Mail\OrderQuote;
-use App\OfflineGateway;
-use App\PackageCategory;
-use App\PackageInput;
-use App\PackageRequest;
-use App\PaymentGateway;
-use App\Pcategory;
-use App\Product;
-use App\QuoteInput;
-use App\Request;
-use App\RequestCategory;
-use App\RssFeed;
-use App\RssPost;
-use App\Section;
-use App\ServiceRequest;
-use App\Subscription;
-use Session;
-use Validator;
-use Config;
+use App\{
+    Archive, Article, ArticleCategory, BasicExtended as BE, BasicExtra, BasicSetting as BS,
+    Blog, Bcategory, CalendarEvent, ContactMail, Donation, DonationDetail,
+    Event, EventCategory, Exception, Faq, FAQCategory, Feature, Gallery, GalleryCategory, Home,
+    Http\Controllers\Controller, Jcategory, Job, Language, Member, OfflineGateway, Package,
+    PackageCategory, PackageInput, PackageOrder, PackageRequest, Page, Partner, PaymentGateway,
+    Pcategory, Point, Portfolio, Product, Quote, QuoteInput, Request, RequestCategory, RssFeed,
+    RssPost, Scategory, Section, Service, ServiceRequest, Session, Statistic, Subscriber,
+    Subscription, Testimonial, Slider
+};
+
+use Carbon\Carbon;
+use Illuminate\Support\Facades\{
+    App, DB, Validator as FacadesValidator
+};
 use Mail;
 use PDF;
 use Auth;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator as FacadesValidator;
+use Config;
 
 class FrontendController extends Controller
 {
@@ -86,257 +36,275 @@ class FrontendController extends Controller
 
     public function index()
     {
-        if (session()->has('lang')) {
-            $currentLang = Language::where('code', session()->get('lang'))->first();
-        } else {
-            $currentLang = Language::where('is_default', 1)->first();
-        }
+        $currentLang = Language::firstWhere('code', session('lang')) ?? Language::where('is_default', 1)->first();
         $data['currentLang'] = $currentLang;
-
-        $be = $currentLang->basic_extended;
-        $bex = $currentLang->basic_extra;
         $lang_id = $currentLang->id;
 
-        $data['categories'] = PackageCategory::where('language_id', $currentLang->id)
-            ->where('status', 1)->orderBy('serial_number', 'ASC')->get();
-        $data['sections'] = Section::with('packages')->where('active', 1)->where('language_id', $currentLang->id)->get();
-        //     $data['cats'] = App\RequestCategory::with('services')->where('language_id',$currentLang->id)->orderBy('order_cat_pack', 'ASC')->get();
-        $data['cats'] = RequestCategory::with('services')->where('language_id', $currentLang->id)->orderBy('order_cat_pack', 'ASC')->get();
+        $data['categories'] = PackageCategory::where('language_id', $lang_id)
+            ->where('status', 1)
+            ->orderBy('serial_number', 'ASC')
+            ->get();
 
+        $data['sections'] = Section::with('packages')
+            ->where('active', 1)
+            ->where('language_id', $lang_id)
+            ->get();
 
-        $data['sliders'] = Slider::where('language_id', $lang_id)->orderBy('serial_number', 'ASC')->get();
-        $data['features'] = Feature::where('language_id', $lang_id)->orderBy('serial_number', 'ASC')->get();
-        $version = $be->theme_version;
+        $data['cats'] = RequestCategory::with('services')
+            ->where('language_id', $lang_id)
+            ->orderBy('order_cat_pack', 'ASC')
+            ->get();
 
-        // if home page page builder is disabled
-        if ($bex->home_page_pagebuilder == 0) {
-            $data['portfolios'] = Portfolio::where('language_id', $lang_id)->where('feature', 1)->orderBy('serial_number', 'ASC')->limit(10)->get();
-            $data['points'] = Point::where('language_id', $lang_id)->orderBy('serial_number', 'ASC')->get();
-            $data['statistics'] = Statistic::where('language_id', $lang_id)->orderBy('serial_number', 'ASC')->get();
-            $data['testimonials'] = Testimonial::where('language_id', $lang_id)->orderBy('serial_number', 'ASC')->get();
-            $data['faqs'] = Faq::where('language_id', $lang_id)->orderBy('serial_number', 'ASC')->where('feature', 1)->where('deleted', 0)->get();
+        $data['sliders'] = Slider::where('language_id', $lang_id)
+            ->orderBy('serial_number', 'ASC')
+            ->get();
 
-            $data['members'] = Member::where('language_id', $lang_id)->where('feature', 1)->get();
-            $data['blogs'] = Blog::where('language_id', $lang_id)->orderBy('created_at', 'DESC')->limit(3)->get();
-            $data['partners'] = Partner::where('language_id', $lang_id)->orderBy('serial_number', 'ASC')->get();
-            $data['packages'] = Package::where('language_id', $lang_id)->where('feature', 1)->orderBy('serial_number', 'ASC')->get();
-            $data['scategories'] = Scategory::where('language_id', $lang_id)->where('feature', 1)->where('status', 1)->where('type', null)->orderBy('serial_number', 'ASC')->get();
-            $data['scategorieshigh'] = Scategory::where('language_id', $lang_id)->where('feature', 1)->where('status', 1)->where('type', 1)->orderBy('serial_number', 'ASC')->get();
+        $data['features'] = Feature::where('language_id', $lang_id)
+            ->orderBy('serial_number', 'ASC')
+            ->get();
+
+        $version = $currentLang->basic_extended->theme_version;
+        $pageBuilderEnabled = $currentLang->basic_extra->home_page_pagebuilder;
+
+        $data = $this->loadData($data, $version, $lang_id, $pageBuilderEnabled);
+
+        $view = $this->getViewForTheme($version, $pageBuilderEnabled);
+        return view($view, $data);
+    }
+
+    private function loadData($data, $version, $lang_id, $pageBuilderEnabled)
+    {
+        if ($pageBuilderEnabled == 0) {
+            $data['portfolios'] = Portfolio::where('language_id', $lang_id)
+                ->where('feature', 1)
+                ->orderBy('serial_number', 'ASC')
+                ->limit(10)
+                ->get();
+
+            $data['points'] = Point::where('language_id', $lang_id)
+                ->orderBy('serial_number', 'ASC')
+                ->get();
+
+            $data['statistics'] = Statistic::where('language_id', $lang_id)
+                ->orderBy('serial_number', 'ASC')
+                ->get();
+
+            $data['testimonials'] = Testimonial::where('language_id', $lang_id)
+                ->orderBy('serial_number', 'ASC')
+                ->get();
+
+            $data['faqs'] = Faq::where('language_id', $lang_id)
+                ->orderBy('serial_number', 'ASC')
+                ->where('feature', 1)
+                ->where('deleted', 0)
+                ->get();
+
+            $data['members'] = Member::where('language_id', $lang_id)
+                ->where('feature', 1)
+                ->get();
+
+            $data['blogs'] = Blog::where('language_id', $lang_id)
+                ->orderBy('created_at', 'DESC')
+                ->limit(3)
+                ->get();
+
+            $data['partners'] = Partner::where('language_id', $lang_id)
+                ->orderBy('serial_number', 'ASC')
+                ->get();
+
+            $data['packages'] = Package::where('language_id', $lang_id)
+                ->where('feature', 1)
+                ->orderBy('serial_number', 'ASC')
+                ->get();
+
+            $data['scategories'] = Scategory::where('language_id', $lang_id)
+                ->where('feature', 1)
+                ->where('status', 1)
+                ->where('type', null)
+                ->orderBy('serial_number', 'ASC')
+                ->get();
+
+            $data['scategorieshigh'] = Scategory::where('language_id', $lang_id)
+                ->where('feature', 1)
+                ->where('status', 1)
+                ->where('type', 1)
+                ->orderBy('serial_number', 'ASC')
+                ->get();
+
             if (!serviceCategory()) {
-                $data['services'] = Service::where('language_id', $lang_id)->where('feature', 1)->orderBy('serial_number', 'ASC')->get();
+                $data['services'] = Service::where('language_id', $lang_id)
+                    ->where('feature', 1)
+                    ->orderBy('serial_number', 'ASC')
+                    ->get();
             }
-        }
-        // if home page page builder is disabled
-        else {
-            $data['home'] = Home::where('theme', $be->theme_version)->where('language_id', $currentLang->id)->first();
+        } else {
+            $data['home'] = Home::where('theme', $version)
+                ->where('language_id', $lang_id)
+                ->first();
         }
 
-        if ($version == 'gym') {
-            if ($bex->home_page_pagebuilder == 1) {
-                return view('front.gym.index', $data);
-            } else {
-                return view('front.gym.index1', $data);
-            }
-        } elseif ($version == 'car') {
-            if ($bex->home_page_pagebuilder == 1) {
-                return view('front.car.index', $data);
-            } else {
-                return view('front.car.index1', $data);
-            }
-        } elseif ($version == 'cleaning') {
-            if ($bex->home_page_pagebuilder == 1) {
-                return view('front.cleaning.index', $data);
-            } else {
-                return view('front.cleaning.index1', $data);
-            }
-        } elseif ($version == 'construction') {
-            if ($bex->home_page_pagebuilder == 1) {
-                return view('front.construction.index', $data);
-            } else {
-                return view('front.construction.index1', $data);
-            }
-        } elseif ($version == 'logistic') {
-            if ($bex->home_page_pagebuilder == 1) {
-                return view('front.logistic.index', $data);
-            } else {
-                return view('front.logistic.index1', $data);
-            }
-        } elseif ($version == 'lawyer') {
-            if ($bex->home_page_pagebuilder == 1) {
-                return view('front.lawyer.index', $data);
-            } else {
-                return view('front.lawyer.index1', $data);
-            }
-        } elseif ($version == 'default') {
-            $data['fcategories'] = Pcategory::where('status', 1)->where('language_id', $currentLang->id)->where('is_feature', 1)->get();
-            $data['hcategories'] = Pcategory::where('status', 1)->where('language_id', $currentLang->id)->where('products_in_home', 1)->get();
-            $data['fproducts'] = Product::where('status', 1)->where('is_feature', 1)->where('language_id', $currentLang->id)->orderBy('id', 'DESC')->limit(10)->get();
-            $data['products'] = Product::where('status', 1)->where('language_id', $currentLang->id)->orderBy('id', 'DESC')->limit(10)->get();
-            if ($bex->home_page_pagebuilder == 1) {
-                return view('front.default.index', $data);
-            } else {
-                return view('front.default.index1', $data);
-            }
-        } elseif ($version == 'default' || $version == 'dark') {
-            if ($bex->home_page_pagebuilder == 1) {
-                return view('front.default.index', $data);
-            } else {
-                return view('front.default.index1', $data);
-            }
-        }
+        return $data;
+    }
+
+    private function getViewForTheme($themeVersion, $pageBuilderEnabled)
+    {
+        $viewPrefix = 'front.';
+        $viewSuffix = ($pageBuilderEnabled == 1) ? '' : '1';
+
+        $themeViews = [
+            'gym' => 'gym.index',
+            'car' => 'car.index',
+            'cleaning' => 'cleaning.index',
+            'construction' => 'construction.index',
+            'logistic' => 'logistic.index',
+            'lawyer' => 'lawyer.index',
+            'default' => 'default.index',
+            'dark' => 'default.index',
+        ];
+
+        return $viewPrefix . ($themeViews[$themeVersion] ?? 'default.index') . $viewSuffix;
     }
 
     // cataloge
     public function cataloge()
-    {
-        if (session()->has('lang')) {
-            $currentLang = Language::where('code', session()->get('lang'))->first();
-        } else {
-            $currentLang = Language::where('is_default', 1)->first();
-        }
-        $data['currentLang'] = $currentLang;
-        $be = $currentLang->basic_extended;
-        App::setLocale($currentLang->code);
+{
+    $currentLang = Language::firstWhere('code', session('lang')) ?? Language::where('is_default', 1)->first();
+    App::setLocale($currentLang->code);
+    $be = $currentLang->basic_extended;
+    $version = $be->theme_version;
+    $data = [
+        'currentLang' => $currentLang,
+        'version' => $currentLang->basic_extended->theme_version,
+    ];
 
-        $version = $be->theme_version;
-
-        if ($version == 'gym') {
-            return view('front.gym.cataloge', $data);
-        } elseif ($version == 'car') {
-            return view('front.car.cataloge', $data);
-        } elseif ($version == 'cleaning') {
-            return view('front.cleaning.cataloge', $data);
-        } elseif ($version == 'construction') {
-            return view('front.construction.cataloge', $data);
-        } elseif ($version == 'logistic') {
-            return view('front.logistic.cataloge', $data);
-        } elseif ($version == 'lawyer') {
-            return view('front.lawyer.cataloge', $data);
-        } elseif ($version == 'default' || $version == 'dark' || $version == 'ecommerce') {
+    switch ($data['version']) {
+        case 'gym':
+        case 'car':
+        case 'cleaning':
+        case 'construction':
+        case 'logistic':
+        case 'lawyer':
+            return view("front.{$data['version']}.cataloge", $data);
+        case 'default':
+        case 'dark':
+        case 'ecommerce':
             $data['fproducts'] = Product::where('status', 1)->where('is_feature', 1)->where('language_id', $currentLang->id)->orderBy('id', 'DESC')->limit(10)->get();
             $data['version'] = $version == 'dark' ? 'default' : $version;
             $data['categories'] = Pcategory::with('products')->where('status', 1)->where('language_id', $currentLang->id)->where('is_feature', 1)->get();
-            //    dd($data['categories']);
-            return view('front.default.cataloge', $data);
-        }
+            return view("front.default.cataloge", $data);
     }
-
+}
     //about function
     public function about()
-    {
-        if (session()->has('lang')) {
-            $currentLang = Language::where('code', session()->get('lang'))->first();
-        } else {
-            $currentLang = Language::where('is_default', 1)->first();
-        }
-        $data['currentLang'] = $currentLang;
-        $be = $currentLang->basic_extended;
+{
+    // Determine the current language
+    $currentLang = Language::firstWhere('code', session('lang')) ?? Language::where('is_default', 1)->first();
 
+    // Set the current language locale
+    App::setLocale($currentLang->code);
 
-
-        App::setLocale($currentLang->code);
-
-        $version = $be->theme_version;
-
-        if ($version == 'gym') {
-            return view('front.gym.about', $data);
-        } elseif ($version == 'car') {
-            return view('front.car.about', $data);
-        } elseif ($version == 'cleaning') {
-            return view('front.cleaning.about', $data);
-        } elseif ($version == 'construction') {
-            return view('front.construction.about', $data);
-        } elseif ($version == 'logistic') {
-            return view('front.logistic.about', $data);
-        } elseif ($version == 'lawyer') {
-            return view('front.lawyer.about', $data);
-        } elseif ($version == 'default' || $version == 'dark' || $version == 'ecommerce') {
-            $data['version'] = $version == 'dark' ? 'default' : $version;
-
+    // Initialize data array with current language
+    $data = [
+        'currentLang' => $currentLang,
+        'version' => $currentLang->basic_extended->theme_version,
+    ];
+    // Check the theme version and load the appropriate view
+    switch ($data['version']) {
+        case 'gym':
+        case 'car':
+        case 'cleaning':
+        case 'construction':
+        case 'logistic':
+        case 'lawyer':
+            // Load theme-specific view for about page
+            return view("front.{$data['version']}.about", $data);
+        case 'default':
+        case 'dark':
+        case 'ecommerce':
+            // Load default view for about page
             $lang_id = $currentLang->id;
+            // Fetch data required for the default theme
             $data['scategories'] = Scategory::where('language_id', $lang_id)->where('feature', 1)->where('status', 1)->where('type', null)->orderBy('serial_number', 'ASC')->get();
             $data['statistics'] = Statistic::where('language_id', $lang_id)->orderBy('serial_number', 'ASC')->get();
-
             $data['partners'] = Partner::where('language_id', $lang_id)->orderBy('serial_number', 'ASC')->get();
             $data['categories'] = FAQCategory::where('language_id', $lang_id)->where('status', 1)
                 ->orderBy('serial_number', 'ASC')->get();
-
-            // $data['faqs'] = Faq::where('language_id', $lang_id)->orderBy('serial_number', 'ASC')->get();
-
             $data['testimonials'] = Testimonial::where('language_id', $lang_id)->orderBy('serial_number', 'ASC')->get();
-
-            //    dd($data['categories']);
+            // Load the default about view
             return view('front.default.about', $data);
-        }
     }
+}
+
 
     //banks
 
     public function banks()
-    {
-        if (session()->has('lang')) {
-            $currentLang = Language::where('code', session()->get('lang'))->first();
-        } else {
-            $currentLang = Language::where('is_default', 1)->first();
-        }
-        $data['currentLang'] = $currentLang;
-        $be = $currentLang->basic_extended;
+{
+    // Determine the current language
+    $currentLang = Language::firstWhere('code', session('lang')) ?? Language::where('is_default', 1)->first();
 
-        App::setLocale($currentLang->code);
+    // Set the current language locale
+    App::setLocale($currentLang->code);
 
-        $version = $be->theme_version;
+    // Initialize data array with current language
+    $data = [
+        'currentLang' => $currentLang,
+        'version' => $currentLang->basic_extended->theme_version,
+    ];
 
-        if ($version == 'gym') {
-            return view('front.gym.banks', $data);
-        } elseif ($version == 'car') {
-            return view('front.car.banks', $data);
-        } elseif ($version == 'cleaning') {
-            return view('front.cleaning.banks', $data);
-        } elseif ($version == 'construction') {
-            return view('front.construction.banks', $data);
-        } elseif ($version == 'logistic') {
-            return view('front.logistic.banks', $data);
-        } elseif ($version == 'lawyer') {
-            return view('front.lawyer.banks', $data);
-        } elseif ($version == 'default' || $version == 'dark' || $version == 'ecommerce') {
-            $data['version'] = $version == 'dark' ? 'default' : $version;
+    // Check the theme version and load the appropriate view
+    switch ($data['version']) {
+        case 'gym':
+        case 'car':
+        case 'cleaning':
+        case 'construction':
+        case 'logistic':
+        case 'lawyer':
+            // Load theme-specific view for banks page
+            return view("front.{$data['version']}.banks", $data);
+        case 'default':
+        case 'dark':
+        case 'ecommerce':
+            // Load the default view for banks page
+            $data['version'] = $data['version'] == 'dark' ? 'default' : $data['version'];
             return view('front.banks', $data);
-        }
     }
+}
 
     //links
     public function links()
-    {
-        if (session()->has('lang')) {
-            $currentLang = Language::where('code', session()->get('lang'))->first();
-        } else {
-            $currentLang = Language::where('is_default', 1)->first();
-        }
-        $data['currentLang'] = $currentLang;
-        $be = $currentLang->basic_extended;
-        App::setLocale($currentLang->code);
-        $version = $be->theme_version;
-        if ($version == 'gym') {
-            return view('front.gym.links', $data);
-        } elseif ($version == 'car') {
-            return view('front.car.links', $data);
-        } elseif ($version == 'cleaning') {
-            return view('front.cleaning.links', $data);
-        } elseif ($version == 'construction') {
-            return view('front.construction.links', $data);
-        } elseif ($version == 'logistic') {
-            return view('front.logistic.links', $data);
-        } elseif ($version == 'lawyer') {
-            return view('front.lawyer.links', $data);
-        } elseif ($version == 'default' || $version == 'dark' || $version == 'ecommerce') {
-            $data['version'] = $version == 'dark' ? 'default' : $version;
+{
+    // Determine the current language
+    $currentLang = Language::firstWhere('code', session('lang')) ?? Language::where('is_default', 1)->first();
+
+    // Set the current language locale
+    App::setLocale($currentLang->code);
+
+    // Initialize data array with the current language
+    $data = [
+        'currentLang' => $currentLang,
+        'version' => $currentLang->basic_extended->theme_version,
+    ];
+
+    // Check the theme version and load the appropriate view
+    switch ($data['version']) {
+        case 'gym':
+        case 'car':
+        case 'cleaning':
+        case 'construction':
+        case 'logistic':
+        case 'lawyer':
+            // Load theme-specific view for links page
+            return view("front.{$data['version']}.links", $data);
+        case 'default':
+        case 'dark':
+        case 'ecommerce':
+            // Load the default view for links page
+            $data['version'] = $data['version'] == 'dark' ? 'default' : $data['version'];
             return view('front.links', $data);
-        }
     }
-
-
-    // lp
-    public function lp()
+}
+public function lp()
     {
         if (session()->has('lang')) {
             $currentLang = Language::where('code', session()->get('lang'))->first();
@@ -346,8 +314,6 @@ class FrontendController extends Controller
         $data['currentLang'] = $currentLang;
         $be = $currentLang->basic_extended;
         $lang_id = $currentLang->id;
-
-
         $data['features'] = Feature::where('language_id', $lang_id)->orderBy('serial_number', 'ASC')->get();
         $data['statistics'] = Statistic::where('language_id', $lang_id)->orderBy('serial_number', 'ASC')->get();
         $data['partners'] = Partner::where('language_id', $lang_id)->orderBy('serial_number', 'ASC')->get();
@@ -359,12 +325,14 @@ class FrontendController extends Controller
             $data['services'] = Service::where('language_id', $lang_id)->where('feature', 1)->orderBy('serial_number', 'ASC')->get();
         }
         App::setLocale($currentLang->code);
-        $data['categories'] = RequestCategory::where('language_id', $currentLang->id)->where('active', 1)->where('cat_id', 0)->orderBy('order_cat', 'ASC')->get();
+        $data['categories'] = \App\RequestCategory::where('language_id', $currentLang->id)->where('active', 1)->where('cat_id', 0)->orderBy('order_cat', 'ASC')->get();
+        // dd($data);
         App::setLocale($currentLang->code);
-        $service = Request::find(old('service_id'));
+        //  $service = \App\Request::find(156);
+        $service = \App\Request::find(old('service_id'));
         $data['service'] = $service;
         if ($service) {
-            $data['subcats'] = RequestCategory::find(Request::find($service->id)->category->cat_id)->category();
+            $data['subcats'] = \App\RequestCategory::find(\App\Request::find($service->id)->category->cat_id)->category();
         }
 
         if ($currentLang->code == 'ar') {
@@ -373,6 +341,7 @@ class FrontendController extends Controller
             $data['cities'] = array("Riyadh", "Jeddah", "Mecca", "Medina", "Ta'if", "Dammam", "Khobar", "Tabuk", "Al-Kharj", "Buraydah", "Khamis Mushait", "Al-Hufuf", "Al-Mubarraz", "Hafar Al-Batin", "Ha'il", "Najran", "Jubail", "Abha", "Yanbu", "Unaizah", "Arar", "Sakakah", "Jazan", "Qurayyat", "Dhahran", "Al-Qatif", "Al-Baha", "Bishah", "Accra", "Ad-Dilam", "Hautat Bani Tamim", "Al-Hareeq", "Aflaj", "Al-khamasin", "Saleel", "Harimlaa", "Thadiq", "Ragbah", "Dharmaa", "Muzahmiyyah", "Marat", "Shaqraa", "Al-Qasab", "Sajir", "Dawadmi", "Quwaiyah", "Afeef", "Khasirah", "Remaah", "Shuwiyah", "Majma'ah", "Zulfi", "Al-Ghat", "Al-Artaweeiyah", "Sudair", "Al-Bada'a", "Al-Mithnab", "Al-Rass", "Al-Bukayriyah", "Riyadh Al-Khabra", "Al-Asyah", "Shiri", "Fawarah", "Aqlit Al-Sukour", "Al-Bateen", "Mudraj", "Dulaimiyah", "Al-Batraa", "Al-Qareen", "Thaibiyah", "Nabhaniyah", "Daknah", "Um Hazm", "Dali' Rasheed", "Diryah", "Qubbah", "Al-Khabra", "Al-Ssir", "Tharmadaa", "Halban", "Mulham", "Quwarah", "Wadi Al-Dawasir", "Al-Jamsh", "Bajadiyah", "Al-Hasa", "Rahima", "Nua'iriyah", "Al-Kafji", "Safaniyah", "Beqaiq", "Thuqbah", "Saihat", "Safwa", "Qaryah", "Ras Tanurah", "Al-Hasa Villages", "Uqair", "Salwa", "Al-Hana", "Harid", "Al-Oyoun", "Ain Dar", "Qaisumah", "Al-Raq'i", "Military city of king Khalid", "Samuda", "Um Qulaib", "Ibn Tawalah", "Sadawi", "Al-Sa'erah", "Al-Haliqah", "Buqa'a", "Moqiq", "Durghut", "Tabah", "Al-Ha'it", "Ha'il Villages", "Jibah", "Turbit Ha'il", "Al-Shamli", "Rawdah", "Al-Kahfa", "Sulaymi", "Al-Khotta", "Shinan", "Economic city of prince Abd Al-Aziz Bin musa'id (Ha'il)", "Dumat Al-Jandal", "Tabarjal", "Qarah", "Suwair", "Hudaid", "Al-Adar'i", "Al-Laqai't", "Zalloum", "Tareef", "Rafha", "Halit Ammar", "Al-Wajh", "Haqil", "Taima'a", "Diba'a", "Al-Bid'a", "Sharma", "Muwilih", "Kahza", "Qiyal", "Al-Shuruf", "Miqna", "Kuraybah", "Al-Bi'er", "Jahraa", "Shiwaq", "Qulaybah", "Badi'a", "Al-Disah", "Mu'atham", "Fajir", "Al-Khirmah", "Turbit Al-Ta'if", "Bani Malik", "Rinaih", "Al-Moyah", "Thulam", "Bahrah", "Mastourah", "Thahban", "Asfan", "Abu Rakah", "Bilharith", "Qiya'a", "Tir'it Thaqif", "Ghazail", "Al-Laith", "Rabigh", "Qunfuthah", "Khulais", "Al-Kamil", "Mudrakah", "Al-Jumum", "Al-Sharai'", "Economic city of king Abdullah (Rabigh)", "Economic city of knowledge", "Al-Ula", "Al-Mahd", "Al-Hanakiya", "Al-Hasew", "Al-Thamid", "Al-Omiq", "Shaqran", "Mulailih", "Swairqiyah", "Al-Farish", "Wadi Al-Firi'", "Khaybar", "Salsa", "Suwiydrah", "Thirib", "Laffih", "Amlaj", "Badr", "Al-Wasitah", "Musayjid", "Biljarshi", "Al-Minduq", "Bani Hassan", "Doos", "Al-Qirri", "Mikwah", "Ghamid Al-Zinad", "Qalawi", "Sha'raa", "Al-Aqeeq", "Al-Hijaz Villages", "Tathlith", "Surat Obaydah", "Ohud Rafidah", "Dhahran Al-Janoub", "Al-Nammas", "Muhai'l", "Rijal Alm'a", "Tannumah", "Bani Amro", "Al-Majardah", "Qina' Wilbahir", "Rabboa'a", "Al-Qahmah", "Jizan", "Abu Areesh", "Al-Shuqayri", "Al-Raith AL-Shaqiq", "Dumd", "Fifa", "Sibya", "Samtit Al-Tiwal", "Farasan", "Dayer Bani Malik", "Huroub", "Ohud Al-Masariha - Al-Khoba", "Shrurah", "Al-Obaylah", "Badr Al-Janoub", "Al-Wadi'a", "Hubunah", "Yedma", "Jazan city of basic and transformed industries");
         }
         $version = $be->theme_version;
+
         if ($version == 'gym') {
             return view('front.gym.lp', $data);
         } elseif ($version == 'car') {
@@ -387,13 +356,12 @@ class FrontendController extends Controller
             return view('front.lawyer.lp', $data);
         } elseif ($version == 'default' || $version == 'dark' || $version == 'ecommerce') {
             $data['version'] = $version == 'dark' ? 'default' : $version;
+
             return view('front.lp', $data);
         }
     }
 
-    // dawnload
-    // page for download catagory
-    public function downloads()
+    public function tools()
     {
         if (session()->has('lang')) {
             $currentLang = Language::where('code', session()->get('lang'))->first();
@@ -403,31 +371,80 @@ class FrontendController extends Controller
         $data['currentLang'] = $currentLang;
         $be = $currentLang->basic_extended;
         App::setLocale($currentLang->code);
-
         $version = $be->theme_version;
-
         if ($version == 'gym') {
-            return view('front.gym.downloads', $data);
+            return view('front.gym.tools', $data);
         } elseif ($version == 'car') {
-            return view('front.car.downloads', $data);
+            return view('front.car.tools', $data);
         } elseif ($version == 'cleaning') {
-            return view('front.cleaning.downloads', $data);
+            return view('front.cleaning.tools', $data);
         } elseif ($version == 'construction') {
-            return view('front.construction.downloads', $data);
+            return view('front.construction.tools', $data);
         } elseif ($version == 'logistic') {
-            return view('front.logistic.downloads', $data);
+            return view('front.logistic.tools', $data);
         } elseif ($version == 'lawyer') {
-            return view('front.lawyer.downloads', $data);
+            return view('front.lawyer.tools', $data);
         } elseif ($version == 'default' || $version == 'dark' || $version == 'ecommerce') {
             $data['version'] = $version == 'dark' ? 'default' : $version;
-
             $lang_id = $currentLang->id;
-            $data['downloads'] = DB::table('downloads')->where('language_id', $lang_id)->where('cat_id', 0)->where('deleted', 0)->orderBy('id', 'ASC')->get();
-
-
-            return view('front.downloads', $data);
+            $data['downloads'] = DB::table('downloads')->where('language_id', $lang_id)->where('deleted', 0)->where('cat_id', request('id'))->orderBy('id', 'ASC')->get();
+            return view('front.tools', $data);
         }
     }
+
+
+
+
+    // dawnload
+    // page for download catagory
+    public function downloads()
+{
+    $currentLang = Language::where('code', session('lang'))->firstOr(fn() => Language::where('is_default', 1)->first());
+
+    $data = [
+        'currentLang' => $currentLang,
+    ];
+
+    $be = $currentLang->basic_extended;
+    App::setLocale($currentLang->code);
+
+    $version = $be->theme_version;
+
+    $viewName = $this->getViewName($version);
+
+    if ($version == 'default' || $version == 'dark' || $version == 'ecommerce') {
+        $data['version'] = $version == 'dark' ? 'default' : $version;
+        $data['downloads'] = $this->getDownloads($currentLang->id);
+
+        return view('front.downloads', $data);
+    }
+
+    return view($viewName, $data);
+}
+
+private function getViewName($version)
+{
+    $themeMap = [
+        'gym' => 'front.gym.downloads',
+        'car' => 'front.car.downloads',
+        'cleaning' => 'front.cleaning.downloads',
+        'construction' => 'front.construction.downloads',
+        'logistic' => 'front.logistic.downloads',
+        'lawyer' => 'front.lawyer.downloads',
+    ];
+
+    return $themeMap[$version] ?? 'front.downloads';
+}
+
+private function getDownloads($langId)
+{
+    return DB::table('downloads')
+        ->where('language_id', $langId)
+        ->where('cat_id', 0)
+        ->where('deleted', 0)
+        ->orderBy('id', 'ASC')
+        ->get();
+}
 
 
     // download file

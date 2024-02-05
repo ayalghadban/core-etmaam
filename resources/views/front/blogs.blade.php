@@ -49,18 +49,16 @@
 
                                 $blogDate = $blogDate->translatedFormat('jS F, Y');
                             @endphp
-                                        @if($blog->author != null)                             
+                                        @if($blog->author != null)
                                     <p class="date"><small>{{__('By')}}     <span class="username">{{$blog->author}}</span></small> | <small>{{$blogDate}}</small> </p>
                                         @else
                                     <p class="date"><small>{{__('By')}}     <span class="username">{{$blog->author}}  {{__('Admin')}}</span></small> | <small>{{$blogDate}}</small> </p>
-                                        @endif 
-
+                                        @endif
                              <h4 class="blog-title"><a href="{{route('front.blogdetails', [$blog->id])}}">{{strlen($blog->title) > 30 ? mb_substr($blog->title, 0, 30, 'utf-8') . '...' : $blog->title}}</a></h4>
 
                              <p class="blog-summary">{!! strlen(strip_tags($blog->content)) > 100 ? mb_substr(strip_tags($blog->content), 0, 100, 'utf-8') . '...' : strip_tags($blog->content) !!}</p>
 
                              <a href="{{route('front.blogdetails', [$blog->id])}}" class="readmore-btn"><span>{{__('Read More')}}</span></a>
-
                           </div>
                        </div>
                     </div>

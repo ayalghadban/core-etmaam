@@ -467,12 +467,17 @@
                             </div>
                         </div>
                         <div class="col-12 col-md-4  ">
-                            <div class="footerWithVat"><a class="vatLink"
+                            <div class="footerWithVat">
+                                <a class="vatLink"
                                     href="https://etmaam.com.sa/assets/front/files/vat.pdf" target="_blank"> <img
                                         class="lazy" src="assets/front/img/VAT.png" width="30px"
                                         alt=""></a>
                                 <a class="" href="https://maroof.sa/210160" target="_blank">
                                     <img class="lazy" width="100px" src="assets/front/img/ma3rof.png"
+                                        alt="">
+                                </a>
+                                <a class="" href="../../../../../assets/front/files/Certificate.pdf" target="_blank">
+                                    <img class="lazy" width="50px" src="../../../../../assets/front/img/TfbxewW__400x400.jpg"
                                         alt="">
                                 </a>
                             </div>

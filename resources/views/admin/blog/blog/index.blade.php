@@ -407,7 +407,6 @@ class="mb-0 text-danger em"
 
             });
         });
-
         // make input fields RTL
         $("select[name='language_id']").on('change', function() {
             $(".request-loader").addClass("show");

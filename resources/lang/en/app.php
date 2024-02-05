@@ -66,9 +66,9 @@ return [
     'backtopervious' => 'Return to the previous request',
         'ourprofileo' => 'Service Guide',
         'reqirments' => 'Educational requirements',
+'tools' => 'Tools and calcolators',
 
-
-    // end part need to check 
+    // end part need to check
 ];
 
 ?>

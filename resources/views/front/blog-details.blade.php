@@ -20,10 +20,10 @@
            <div class="{{$blog->sidebar == 1 ? 'col-lg-7' : 'col-12'}}">
               <div class="blog-details">
                  <img class="blog-details-img-1 lazy" data-src="{{asset('assets/front/img/blogs/'.$blog->main_image)}}" alt="">
-                 
+
                  <small class="date">
-                     {{date('F d, Y', strtotime($blog->created_at))}} 
-                 @if($blog->author != null)   
+                     {{date('F d, Y', strtotime($blog->created_at))}}
+                 @if($blog->author != null)
                  -  {{__('BY')}} {{$blog->author}}
                  @else
                  -  {{__('BY')}} {{__('Admin')}}
