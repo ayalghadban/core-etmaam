@@ -28,20 +28,6 @@
     </style>
     <div class="container">
         <div class="row ">
-
-            @foreach ($downloads as $download)
-                <div class="col-12 col-md-4  mt-4 ">
-                    <div class="box-bank">
-                        <p class="bank-p">{{ $download->title }}</p>
-                        <label class="bank-label" for="">
-                            {{ $download->description }}
-                        </label>
-
-                        <a href="{{ route('download', $download->id) }}"
-                            class="readmore-btn"><span>{{ __('app.clickhere') }}</span></a>
-                    </div>
-                </div>
-            @endforeach
         </div>
 
     </div>
@@ -50,23 +36,23 @@
 
             <div class="col-12 col-md-4  mt-4 ">
                 <div class="box-bank">
-                    <p class="bank-p">حاسبة مكافأة نهاية الخدمة - قوى</p>
+                    <p class="bank-p">{{ __('app.quiwa') }}</p>
                     <label class="bank-label" for="">
 
                     </label>
 
-                    <a href="https://www.qiwa.sa/ar/tools-and-calculators/end-of-service-reward-calculator" class="readmore-btn"><span>اضغط هنا</span></a>
+                    <a href="https://www.qiwa.sa/ar/tools-and-calculators/end-of-service-reward-calculator" class="readmore-btn"><span>{{ __('app.clickhere') }}</span></a>
                 </div>
             </div>
 
             <div class="col-12 col-md-4  mt-4 ">
                 <div class="box-bank">
-                    <p class="bank-p">الحاسبة العمّاليّة</p>
+                    <p class="bank-p">{{ __('app.calc') }}</p>
                     <label class="bank-label" for="">
 
                     </label>
 
-                    <a href="https://portaleservices.moj.gov.sa/LaborCalculator/LaborCalculator.aspx" class="readmore-btn"><span>اضغط هنا</span></a>
+                    <a href="https://portaleservices.moj.gov.sa/LaborCalculator/LaborCalculator.aspx" class="readmore-btn"><span>{{ __('app.clickhere') }}</span></a>
                 </div>
             </div>
 

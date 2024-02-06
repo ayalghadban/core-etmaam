@@ -477,7 +477,7 @@
                                         alt="">
                                 </a>
                                 <a class="" href="../../../../../assets/front/files/Certificate.pdf" target="_blank">
-                                    <img class="lazy" width="50px" src="../../../../../assets/front/img/TfbxewW__400x400.jpg"
+                                    <img class="lazy" width="50px" style="filter: brightness(0) invert(1);" src="../../../../../assets/front/img/المركز-السعودي-للأعمال.png"
                                         alt="">
                                 </a>
                             </div>

@@ -304,6 +304,37 @@ class FrontendController extends Controller
             return view('front.links', $data);
     }
 }
+
+    public function privacy()
+    {
+        if (session()->has('lang')) {
+            $currentLang = Language::where('code', session()->get('lang'))->first();
+        } else {
+            $currentLang = Language::where('is_default', 1)->first();
+        }
+        $data['currentLang'] = $currentLang;
+        $be = $currentLang->basic_extended;
+        App::setLocale($currentLang->code);
+        $version = $be->theme_version;
+        if ($version == 'gym') {
+            return view('front.gym.privacy', $data);
+        } elseif ($version == 'car') {
+            return view('front.car.privacy', $data);
+        } elseif ($version == 'cleaning') {
+            return view('front.cleaning.privacy', $data);
+        } elseif ($version == 'construction') {
+            return view('front.construction.privacy', $data);
+        } elseif ($version == 'logistic') {
+            return view('front.logistic.privacy', $data);
+        } elseif ($version == 'lawyer') {
+            return view('front.lawyer.privacy', $data);
+        } elseif ($version == 'default' || $version == 'dark' || $version == 'ecommerce') {
+            $data['version'] = $version == 'dark' ? 'default' : $version;
+            $lang_id = $currentLang->id;
+            $data['downloads'] = DB::table('downloads')->where('language_id', $lang_id)->where('deleted', 0)->where('cat_id', request('id'))->orderBy('id', 'ASC')->get();
+            return view('front.privacy', $data);
+        }
+    }
 public function lp()
     {
         if (session()->has('lang')) {

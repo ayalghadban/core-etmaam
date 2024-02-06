@@ -67,6 +67,10 @@ return [
         'ourprofileo' => 'Service Guide',
         'reqirments' => 'Educational requirements',
 'tools' => 'Tools and calcolators',
+'quiwa' => 'End of service gratuity calculator - Qawi',
+'calc' => 'Labor calculator',
+'privecy' =>'Privacy policy'
+
 
     // end part need to check
 ];

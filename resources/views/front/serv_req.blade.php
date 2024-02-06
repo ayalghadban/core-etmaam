@@ -59,7 +59,7 @@
 
                 $.get(url, function(data) {
                     let options = `<option value="" disabled selected>{{__('messages.service_placeholder')}}</option>`;
-                    
+
                     if (data.length == 0) {
                         options += `<option value="" disabled>${'لا يوجد خدمات متاحة حالياً'}</option>`;
                     } else {
@@ -134,7 +134,7 @@
                     </div>
                 </div>
                                                   <div class="col-md-12 text-left ">
-                            
+
     <button type="button" class=" font-lg btn btn-success " style=" border: 1px solid #0A3041;hover:color: #0A3041;color:#fff;" onclick="show()" id="btnID">
        {{__('app.quickservice')}}
     </button>
@@ -142,7 +142,7 @@
                         </div>
 
             </div>
-            
+
         </div>
 
 
@@ -155,7 +155,7 @@
                    @csrf
                     <div class="row">
 
-                    <div class="form-group" style="display:none;"> 
+                    <div class="form-group" style="display:none;">
                     <input name="secure" type="text"  placeholder="" id="secure">
                     <input name="msource" type="text" value="{{ request()->get('msource')}}"  placeholder="" id="msource">
                     </div>
@@ -302,25 +302,6 @@
                                 @endif
                             </div>
                         </div>
-{{--                        <div class=" col-6">--}}
-{{--                            <div class="form-element mb-4">--}}
-{{--                                <label>{{__('messages.subcategory')}}</label>--}}
-{{--                                <select name="category_id" id="sub_category_id" @if(!isset($subcats))disabled @endif>--}}
-{{--                                    <option value="" selected="" disabled="">{{__('messages.subcategory_placeholder')}}</option>--}}
-{{--                                    @if(isset($subcats))--}}
-{{--                                    @foreach($subcats as $cat)--}}
-{{--                                        <option value="{{$cat->id}}" @if($cat->id == $service->category->id) selected @endif>{{$cat->name}}</option>--}}
-{{--                                        @endforeach--}}
-{{--                                        @endif--}}
-{{--                                </select>--}}
-{{--                                @if($errors->first('category_id'))--}}
-{{--                                    <div class="alert alert-danger" role="alert">--}}
-{{--                                        {{$errors->first('category_id')}}--}}
-{{--                                    </div>--}}
-{{--                                @endif--}}
-{{--                            </div>--}}
-{{--                        </div>--}}
-
 
                         <div class="col-12 col-lg-6">
                             <div class="form-element mb-4">
@@ -373,19 +354,7 @@
                                 </select>
                             </div>
                         </div>
-{{--                        <div class=" col-12 col-lg-6">--}}
-{{--                            <div class="form-element mb-4">--}}
-{{--                                <div class="row">--}}
-{{--                                    <div class="col-lg-12">--}}
-{{--                                        <div class="form-element mb-2">--}}
-{{--                                            <label>المرفقات 1 </label>--}}
-{{--                                            <input type="file" name="المرفقات_1" value="">--}}
-{{--                                        </div>--}}
-{{--                                        <p class="text-warning mb-0">** Only zip file is allowed</p>--}}
-{{--                                    </div>--}}
-{{--                                </div>--}}
-{{--                            </div>--}}
-{{--                        </div>--}}
+
                     </div>
                     <div class="row">
                         <div class="col-lg-12 text-center">
@@ -402,11 +371,11 @@
             <div class="row">
 
 <div class="col-lg-12">
-                        
+
                 <form action="{{route('front.sendmail')}}" class="contact-form" method="POST" id="QuickForm" style="display:none;">
                     @csrf
-                    
-                    <div class="form-group" style="display:none;"> 
+
+                    <div class="form-group" style="display:none;">
                    <input name="msource" type="text" value="{{ request()->get('msource')}}"  placeholder="" id="msource2">
                     <input name="secure" type="text"  placeholder="" id="secure">
                     </div>
@@ -428,7 +397,7 @@
                             <p class="text-danger mb-0">{{$errors->first('email')}}</p>
                             @endif
                         </div>
-                        
+
                                                 <div class="col-md-6">
                             <div class="form-element">
                                 <select name="subject" style="width:100%;" id="subjectSelect">
@@ -502,19 +471,19 @@
                             <p class="text-danger mb-0">{{$errors->first('subject')}}</p>
                             @endif
                         </div>
-                        
-                        
+
+
                         <div class="col-md-6">
                             <div class="form-element">
                                 <input name="mobile" type="tel" style="width:100%;" placeholder="{{__('messages.mobile_placeholder')}} *" required>
                             </div>
                         </div>
 
-                        
 
-                        
 
-                        
+
+
+
                         <div class="col-md-12">
                             <div class="form-element">
                                 <textarea name="message" id="comment" cols="30" rows="10" placeholder="{{__('messages.desc_placeholder')}} *" required></textarea>
@@ -543,18 +512,18 @@
                         </div>
                     </div>
                 </form>
-                
 
-                
+
+
                         <button type="button" class="btn-sub font-lg btn btn-success" style="background-color: #0A3041; border: 1px solid #0A3041;hover:color: #0A3041;color:#fff;display:none;" onclick="back()" id="btnID2">
         {{__('app.backtopervious')}}
     </button>
-              </div>  
+              </div>
 
 </div>
 </div>
-                        
-                        
+
+
 
 <script>
     $('#msource').val(localStorage.getItem("marketing_customer"));
@@ -583,7 +552,7 @@ if (!localStorage.getItem("marketing_customer")) {
 
 
         }
-        
+
                         function back() {
             /* Access image by id and change
             the display property to block*/
@@ -594,10 +563,10 @@ if (!localStorage.getItem("marketing_customer")) {
             document.getElementById('QuickForm').style.display = "none";
 
         }
-        
-        
-        
-        
+
+
+
+
 var stype = "{{ request()->get('stype') }}";
 if (stype === 'quick') {
     show();
@@ -610,7 +579,7 @@ if (serviceValue) {
     var subjectSelect = document.getElementById("subjectSelect");
     subjectSelect.value = serviceValue;
 }
-        
+
 </script>
 
 @endsection

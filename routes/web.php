@@ -37,6 +37,7 @@ Route::get('/links', 'Front\FrontendController@links');
 Route::get('/lp', 'Front\FrontendController@lp');
 
 
+Route::get('/privacy_policy','Front\FrontendController@privacy');
 Route::get('/downloads', 'Front\FrontendController@downloads');
 Route::get('/downloads/{id}', 'Front\FrontendController@downloads_files')->name('download');
 
