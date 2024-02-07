@@ -411,6 +411,15 @@
                                         <li>
                                             <a href="https://etmaam.com.sa/career" target="_self">الوظائف</a>
                                         </li>
+                                        <li>
+                                            <a href="https://etmaam.com.sa/tools" target="_self">الأدوات والحاسبات</a>
+                                        </li>
+                                        <li>
+                                            <a href="https://etmaam.com.sa/conditions" target="_self">شروط الاستخدام </a>
+                                        </li>
+                                        <li>
+                                            <a href="https://etmaam.com.sa/privacy_policy" target="_self">سياسة الخصوصية</a>
+                                        </li>
                                     </ul>
                                 </li>
                                 <li>

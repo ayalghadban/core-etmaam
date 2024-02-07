@@ -35,7 +35,7 @@ Route::get('/banks', 'Front\FrontendController@banks');
 Route::get('/links', 'Front\FrontendController@links');
 
 Route::get('/lp', 'Front\FrontendController@lp');
-
+Route::get('/conditions','Front\FrontendController@conditions');
 
 Route::get('/privacy_policy','Front\FrontendController@privacy');
 Route::get('/downloads', 'Front\FrontendController@downloads');
