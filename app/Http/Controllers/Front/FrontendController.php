@@ -366,6 +366,37 @@ public function conditions()
             return view('front.privacy', $data);
         }
     }
+
+    public function company()
+    {
+        if (session()->has('lang')) {
+            $currentLang = Language::where('code', session()->get('lang'))->first();
+        } else {
+            $currentLang = Language::where('is_default', 1)->first();
+        }
+        $data['currentLang'] = $currentLang;
+        $be = $currentLang->basic_extended;
+        App::setLocale($currentLang->code);
+        $version = $be->theme_version;
+        if ($version == 'gym') {
+            return view('front.gym.company', $data);
+        } elseif ($version == 'car') {
+            return view('front.car.company', $data);
+        } elseif ($version == 'cleaning') {
+            return view('front.cleaning.company', $data);
+        } elseif ($version == 'construction') {
+            return view('front.construction.company', $data);
+        } elseif ($version == 'logistic') {
+            return view('front.logistic.company', $data);
+        } elseif ($version == 'lawyer') {
+            return view('front.lawyer.company', $data);
+        } elseif ($version == 'default' || $version == 'dark' || $version == 'ecommerce') {
+            $data['version'] = $version == 'dark' ? 'default' : $version;
+            $lang_id = $currentLang->id;
+            $data['downloads'] = DB::table('downloads')->where('language_id', $lang_id)->where('deleted', 0)->where('cat_id', request('id'))->orderBy('id', 'ASC')->get();
+            return view('front.company', $data);
+        }
+    }
 public function lp()
     {
         if (session()->has('lang')) {

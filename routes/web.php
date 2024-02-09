@@ -41,6 +41,9 @@ Route::get('/privacy_policy','Front\FrontendController@privacy');
 Route::get('/downloads', 'Front\FrontendController@downloads');
 Route::get('/downloads/{id}', 'Front\FrontendController@downloads_files')->name('download');
 
+Route::get('/establishing_your_company','Front\FrontendController@company');
+
+
 Route::get('/thankyou', 'Front\FrontendController@thankyou');
 
 Route::get('/serv_req', 'Front\FrontendController@serv_req')->name('front.serv_req');

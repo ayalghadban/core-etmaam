@@ -1,81 +1,94 @@
-<div class="privacyContent">
-    <p class="a-text">The user of the Itmam platform acknowledges refraining from the following:<br></p>
-    <br>
-    <ol class="ul-text" style="list-style-type: disc;">
-      <li style="color: black; font-size: 25px;">Providing or uploading files containing software, materials, data, or other information that you do not own or have a license for.</li>
-      <li style="color: black; font-size: 25px;">Using this platform in any way to send any commercial or unwanted email or any misuse of this kind.</li>
-      <li style="color: black; font-size: 25px;">Uploading files to this platform that contain viruses, corrupted data, or any malicious software or engaging in any activity that may impact the integrity, reliability, or continued availability of the information on the platform.</li>
-      <li style="color: black; font-size: 25px;">Publishing, advertising, distributing, or disseminating materials or information that defame, violate laws, contain pornography, are obscene, violate public decency, or any illegal materials or information.</li>
-      <li style="color: black; font-size: 25px;">Using any means, program, or action to obstruct or attempt to obstruct proper operation.</li>
-      <li style="color: black; font-size: 25px;">Taking any action that unreasonably or disproportionately imposes a burden on the platform's infrastructure.</li>
-      <li style="color: black; font-size: 25px;">Anything that violates the regulations of the Kingdom of Saudi Arabia, especially the Anti-Cybercrime Law, Personal Data Protection Law, and Electronic Transactions Law.</li>
-    </ol>
-    </p>
-    <br> <br>
-    <h2 style="color: #0A3041">2. Using Links</h2>
-    <br>
-    <p class="a-text">Creating, transferring, or copying any electronic links related to the platform, or posting these links on other sites, except for posting the actual links to the platform on sites whose objectives and policies do not conflict with Itmam's objectives and policies.</p>
-    <br>
+<div class="col-lg-5 formCont" style="border: #0A3041 solid 2px; border-radius: 5px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+    <div class="container" style="text-align: center; padding: 20px;">
+        <h2 style="font-size: 34px; padding-top:20px" class="m-5">تواصل معنا</h2>
+        <div class="contaainer" style="padding: 30px;">
+            <form class="form-group">
 
-    <p class="a-text">
-        <ol style="padding-left:110px; list-style-type: disc;">
-            <li style="color: black; font-size: 25px;">Creating, transferring, or copying any electronic links related to the Itmam platform, or posting these links on other sites, except for posting the actual links to the platform on sites whose objectives and policies do not conflict with Itmam's objectives and policies.</li>
-            <li style="color: black; font-size: 25px;">Itmam reserves the right to impose any conditions when allowing the creation of any electronic link to the platform or any of its contents.</li>
-            <li style="color: black; font-size: 25px;">Itmam is not considered associated or affiliated in any way with any trademarks, logos, service marks, or any other means used or appearing on websites that include links leading to the Itmam platform or any of its contents, unless approved by the relevant management.</li>
-            <li style="color: black; font-size: 25px;">Itmam retains all rights to suspend and disable any link in any form from any unauthorized site or containing inappropriate, offensive, obscene, indecent, pornographic, illegal, or inappropriate content or names, materials, or information that violate any public or private laws.</li>
-            <li style="color: black; font-size: 25px;">Itmam bears no responsibility for the contents available on any other site accessed through Itmam.</li>
-            <li style="color: black; font-size: 25px;">The competent management at Itmam may require approval for any electronic link related to the platform or its contents, and additional information and details may be required before approval.</li>
-            <li style="color: black; font-size: 25px;">The electronic link to the platform or its contents must be clear and accurate, and visitors should not be misled about the source or content of the link.</li>
-            <li style="color: black; font-size: 25px;">All intellectual property rights related to the Itmam website and its contents must be respected, and no manipulation of any technical aspects or content that violates these rights is allowed.</li>
-            <li style="color: black; font-size: 25px;">Itmam reserves the right to amend these terms and conditions at any time without prior notice. It is advisable to regularly review this page for any updates.</li>
-            <li style="color: black; font-size: 25px;">By using any electronic link to the Itmam website, you agree to all the terms and conditions of this clause and commit to abide by them.</li>
-        </ol>
-        </p>
-        <br>
-        <br>
-        <br>
-        <h2 style="color: #0A3041">3. Protection from Viruses</h2>
-        <br>
-        <p class="a-text">We at the Itmam website make every effort to examine and test all site content during production processes. We urge users to run antivirus software to ensure the safety of materials downloaded from the internet. Please note that we are not responsible for any loss or damage to data or devices that may occur during website usage.<br>
-        We ask users to report any improper practices or security vulnerabilities they suspect may affect the site's security. You can report via email: info@etmaam.com.sa. This procedure must be adhered to, or legal action may be taken. Please take the necessary precautions to protect your equipment and data from viruses and malicious software while browsing the site or downloading content from it.</p>
+                <input type="text" placeholder="الاسم الأول "required>
+                <input type="text" placeholder="الاسم الأخير" required>
+                <input type="tel" placeholder="رقم الجوال" required>
+                <input type="email" placeholder="ايميل" required>
+                <textarea placeholder="الرسالة" rows="4" required></textarea>
+                <button class="mb-5" type="submit">ارسل</button>
+            </form>
+        </div>
+    </div>
+</div>
 
-        <br> <br>
-<h2 style="color: #0A3041">4. Claims</h2>
-<p class="a-text">Itmam platform provides its services, as well as the information and materials available through it, "as is" and "as available" without any representations, warranties, or guarantees of any kind. Itmam cannot assure or be responsible for any interruptions, errors, or deviations that may arise from using this platform or its contents or any linked sites, whether knowingly or unknowingly.
-Any communications or information sent by users through this platform will not be owned by them, and they will have no rights to its confidentiality. Any use or interactive interaction with this service is not intended to guarantee any rights, licenses, or privileges for the user of any kind.
-</p>
-<br>
-<h2 style="color: #0A3041">5. Liability</h2>
-<p class="a-text">Itmam platform provides its services and information online with the aim of facilitating manual procedures related to various government departments and entities.
-The user should be aware that internet communication may be subject to interference or interception by unauthorized parties, and the information available through the platform does not replace the information available from official authorities.
-Additionally, the user should be aware that requests and administrative procedures can be directly submitted to the relevant authorities, and therefore, it remains the responsibility of the user to resort to the platform. Itmam platform bears no responsibility for any losses or damages of any kind that may result from relying on any information, data, or opinions provided by the platform.
-The user acknowledges and agrees that their sole recourse for addressing any losses or damages that may occur as a result of their use of the platform is to refrain from using it, accessing it, or continuing to do so.
-</p>
-<br>
 
-<h2 style="color: #0A3041">6. Compensation</h2>
-<p class="a-text">The user acknowledges and agrees not to take any action against Itmam or any of its administrations, employees, or those responsible for the management, maintenance, and updates of its platform. The user releases them from all obligations, responsibilities, and compensations arising or that may arise from the use of the platform or because of it.</p>
-<br>
+"Start your business in Saudi Arabia with our integrated services.
 
-<h2 style="color: #0A3041">7. Intellectual Property Rights</h2>
-<p class="a-text">All content on the platform, including services and information, belongs to Itmam and is fully protected under Saudi copyright laws, trademark rights, and various other intellectual property rights.
-The materials available on this platform, including graphics, information, and software (content), are protected by copyright, trademark rights, and other forms of intellectual property rights and may not be copied or exploited in any way without prior written consent from the platform's management.
-Unless otherwise specified, it is prohibited to sell, license, lease, modify, copy, reproduce, reprint, download, advertise, transmit, distribute, publicly display, edit, or create derivative works from any materials or contents of this business services portal for the public or commercial purposes without obtaining prior written approval from Itmam's Business Services Management.</p>
-<br>
+At Ittimam Al Awal, we are pioneers in the field of business services in the Kingdom of Saudi Arabia, offering a comprehensive range of services for ambitious investors looking to build and expand their businesses in this thriving country. We take pride in providing specialized services that encompass the stages of company establishment, from planning to opening bank accounts and providing continuous follow-up and consultation.
 
-<h2 style="color: #0A3041">8. Judicial Jurisdiction</h2>
-<p class="a-text">The user is subject to the laws of the Kingdom of Saudi Arabia, and its courts have jurisdiction over claims arising from this policy. Specifically, the user is subject to the provisions of the Anti-Cybercrime Law and Personal Data Protection Law if they commit any violations stipulated in these laws. The user may also be legally accountable for any misuse of the platform.</p>
-<br>
+Benefits of Setting Up a Company in Saudi Arabia:
 
-<h2 style="color: #0A3041">9. Legal Reference</h2>
-<ol style="color: black; font-size: 25px; padding-left: 110px; list-style-type: disc;">
-    <li>All materials and information provided through the platform are for awareness and non-profit purposes.</li>
-    <li>The Arabic language is the primary language for benefiting from the materials published on the platform, and its translation is provided as an additional service. Interpretation is not based on translation in case of disputes regarding the platform's content.</li>
-    <li>The regulations and rules displayed on the platform, whether for Itmam or other entities, may be subject to translation and clarification, but the Arabic text remains the primary reference.</li>
-    <li>The platform includes electronic sharing methods such as forums and inquiry platforms, and compliance with the applicable standards and restrictions in using these methods is required.</li>
-    <li>The platform reserves the right to delete comments or posts that are considered inappropriate.</li>
-    <li>For inquiries regarding terms and conditions, you can contact the platform's management through the contact form on the homepage.</li>
-</ol>
-<br>
+Efficiency and Effectiveness in Execution:
+The business environment in Saudi Arabia allows entrepreneurs to quickly and easily establish their companies, reducing administrative procedures and costs.
 
- </div>
+Incentives Offered by the Kingdom to Attract Foreign Investors:
+The Kingdom offers a range of financial and tax incentives to attract foreign investors, enhancing the investment environment.
+
+Full Ownership of Your Business:
+Foreign investors can retain full ownership of their companies, contributing to the attractiveness of investment within Saudi Arabia.
+
+Facilitation of Work Systems and Continuous Support:
+Providing facilitations in work systems and laws makes business operations more efficient and smooth.
+
+Why You Should Open a Branch for Your Company in Saudi Arabia:
+
+Saudi Arabia provides numerous investment opportunities, and it is necessary to exploit the active economic environment. Among the key advantages that make investing in Saudi Arabia attractive are the ease and speed of the establishment process, where administrative procedures have been simplified and the business environment has been improved to provide an investment climate that promotes economic growth. Additionally, the Kingdom offers attractive incentives for foreign investors by providing a range of financial and tax privileges, which contribute to enhancing investment attractiveness. Moreover, the legal system and business regulations in the Kingdom allow investors to enjoy full ownership of their businesses. Visit our blog to discover more about the advantages of investing in Saudi Arabia and the importance of your expansion step. Through Ittimam, you can rely on services to establish your activity with ease and simplicity, reducing the burden of government transactions.
+
+Steps to Establishing a Company in Saudi Arabia:
+
+Pre-Formation:
+This step includes preparatory work for formation, including the general manager's meeting and setting the company's goals.
+
+Required Documents for Preparation:
+The parent company memorandum and partnership documents
+Commercial license
+Certificate of Incorporation
+Board of Directors resolution
+Executive Agency
+
+Company Formation:
+Obtaining the investment license
+Obtaining a commercial license for your activity
+Registering the national address
+Registering with government tax and insurance authorities
+Opening a company bank account
+
+Documents Required for Formation:
+These include the investment license application form, financial data, passport copies and identification for partners, and a certified copy of the written authorization.
+
+Specialized Team in Company Formation:
+The Ittimam team consists of experienced experts with over ten years of experience in the field, enabling us to provide tailored support and effective consultations. We always strive to achieve customer satisfaction and facilitate all details related to the establishment and management of companies, allowing our clients to focus on the growth of their businesses and achieve their goals with confidence.
+
+What We Offer:
+
+Trademark Registration:
+We provide efficient and fast trademark registration services.
+
+Commercial Records Extraction:
+We assist you in obtaining the necessary commercial records accurately and meticulously.
+
+Extraction of Required Licenses by Activity:
+We facilitate the process of obtaining the necessary licenses according to the company's activity.
+
+Opening Files for the Facility with Relevant Authorities:
+We handle the necessary administrative procedures to open files for your company.
+
+Facilitating the Extraction of Employment Visas in a Short Time:
+We provide comprehensive support for obtaining work visas effectively.
+
+Legal Compliance:
+We provide comprehensive legal support, where our team handles all legal procedures to ensure your company's compliance with local laws and regulations.
+
+Business Consultations:
+We provide valuable guidance and consultations to help you make sound decisions for the success of your company. Our consultations include administrative, legal, and financial aspects.
+
+Service Completion Steps:
+
+Planning
+Establishment
+Opening a bank account
+Follow-up and improvement"
